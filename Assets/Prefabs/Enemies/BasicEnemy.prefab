@@ -102,6 +102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkSpeed: 1
+  activeSpeed: 0
   ground:
     serializedVersion: 2
     m_Bits: 64
@@ -209,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Config: 3
-  BroadRadius: 0.1
+  BroadRadius: 2
   Offset: {x: 0, y: 0, z: 0}
   GizmosColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   Hitboxes:
@@ -274,7 +275,7 @@ MonoBehaviour:
   Type: 1
   SphereRadius: 0.5
   CapsuleRadius: 0.5
-  BoxExtents: {x: 0.7, y: 0.5, z: 0.7}
+  BoxExtents: {x: 1, y: 0.5, z: 1}
   CapsuleExtents: 0
   Offset: {x: 0, y: 0, z: 0}
   Root: {fileID: -2991725633000273687}
@@ -664,8 +665,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4507937745128514766}
-  - component: {fileID: 8059966494338608029}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -687,27 +687,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1886679558860383754}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &8059966494338608029
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8443812439302430834}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.4, y: 1, z: 1.4}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8993518075862458783
 GameObject:
   m_ObjectHideFlags: 0

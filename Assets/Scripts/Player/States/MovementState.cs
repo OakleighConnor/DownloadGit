@@ -26,7 +26,7 @@ namespace Player
             cc.Move(cc.maxSpeed * playerScript.dir * 1000 * Runner.DeltaTime);
             */
 
-            player.Move();
+            //player.Move();
         }
         
         protected override void OnExitState()

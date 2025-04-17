@@ -5,6 +5,7 @@ using System.Collections;
 using Fusion.Addons.FSM;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Fusion.LagCompensation;
 
 namespace Player
 {
@@ -26,6 +27,7 @@ namespace Player
         [Header("Player Movement")]
         public NetworkCharacterController cc;
         public int bounceHeight;
+        [Networked] public bool moving { get; set; }
 
         [Header("Animation")]
         public Animator anim;
@@ -136,6 +138,8 @@ namespace Player
             {
                 applyInput.Invoke(data);
             }
+
+            Move();
         }
         bool Grounded() // Performs a raycast to check for ground layer
         {
@@ -171,12 +175,12 @@ namespace Player
 
             // Raycast
             LagCompensatedHit hitInfo;
-            if(Runner.LagCompensation.Raycast(rayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headHitbox, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority))
+            if(Runner.LagCompensation.Raycast(rayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headHitbox, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority | HitOptions.SubtickAccuracy))
             {
                 Debug.Log("Hit");
 
                 // Checks for IDamageable
-                IDamageable damageable = hitInfo.GameObject.GetComponentInParent<IDamageable>();
+                IDamageable damageable = hitInfo.Hitbox.GetComponentInParent<IDamageable>();
                 if(damageable != null) 
                 {
                     Debug.Log("IDamageable found. Calling Damage()");
@@ -200,8 +204,20 @@ namespace Player
         }
         public void Move()
         {
+            // cc.Move must always be called if gravity is to impact the player
+
+            float speed;
+            if(moving)
+            {
+                speed = cc.maxSpeed;
+            }
+            else
+            {
+                speed = 0;
+            }
+            
             dir.Normalize();
-            cc.Move(cc.maxSpeed * dir * 1000 * Runner.DeltaTime);
+            cc.Move(speed * dir * 1000 * Runner.DeltaTime);
         }
         public void Damage()
         {

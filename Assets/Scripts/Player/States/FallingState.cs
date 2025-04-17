@@ -21,7 +21,7 @@ namespace Player
 
         protected override void OnFixedUpdate()
         {
-            player.Move();
+            //player.Move();
         }
         
         protected override void OnExitState()

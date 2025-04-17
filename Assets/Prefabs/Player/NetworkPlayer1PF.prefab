@@ -285,7 +285,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1155369547069526949}
   - component: {fileID: 6938548451286330957}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -503,6 +503,7 @@ MonoBehaviour:
   dir: {x: 0, y: 0}
   cc: {fileID: 0}
   bounceHeight: 20
+  _moving: 0
   anim: {fileID: 0}
   currentAnim: 
   lastAnim: 
@@ -878,7 +879,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5602728628833256700}
   - component: {fileID: 6081322813678620354}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -4,9 +4,9 @@
     "PeerMode": 0,
     "LagCompensation": {
         "Enabled": true,
-        "HitboxBufferLengthInMs": 300,
+        "HitboxBufferLengthInMs": 200,
         "HitboxDefaultCapacity": 512,
-        "CachedStaticCollidersSize": 75
+        "CachedStaticCollidersSize": 100
     },
     "EnqueueIncompleteSynchronousSpawns": false,
     "InvokeRenderInBatchMode": true,

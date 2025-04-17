@@ -28,7 +28,7 @@ namespace Player
                 Machine.TryDeactivateState(StateId);
             }*/
             
-            player.Move();
+            //player.Move();
         }
         
         protected override void OnExitState()

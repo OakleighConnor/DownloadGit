@@ -16,7 +16,7 @@ namespace Player
 
         protected override void OnEnterState()
         {
-            
+            player.moving = false;
         }
 
         protected override void OnFixedUpdate()
@@ -27,12 +27,12 @@ namespace Player
                 Machine.TryDeactivateState(StateId);
             }*/
 
-            player.Move();
+            //player.Move();
         }
         
         protected override void OnExitState()
         {
-            
+            player.moving = true;
         }
 
         protected override void OnEnterStateRender()

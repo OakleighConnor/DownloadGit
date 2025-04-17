@@ -17,6 +17,7 @@ namespace Player
         protected override void OnEnterState()
         {
             player.hitboxes.SetActive(false);
+            player.moving = false;
         }
 
         protected override void OnFixedUpdate()
@@ -31,6 +32,7 @@ namespace Player
         protected override void OnExitState()
         {
             player.hitboxes.SetActive(true);
+            player.moving = true;
         }
 
         protected override void OnEnterStateRender()
