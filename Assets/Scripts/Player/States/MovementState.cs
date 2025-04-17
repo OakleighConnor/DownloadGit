@@ -36,7 +36,7 @@ namespace Player
 
         protected override void OnEnterStateRender()
         {
-            Debug.Log("Moving...");
+            //Debug.Log("Moving...");
         }
 
         protected override void OnRender()

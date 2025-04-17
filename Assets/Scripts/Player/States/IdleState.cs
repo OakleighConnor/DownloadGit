@@ -6,7 +6,7 @@ namespace Player
     {
         protected override bool CanEnterState()
         {
-            return player.cc.Velocity.x <= 0.1f;
+            return base.CanEnterState();
         }
 
         protected override bool CanExitState(PlayerStateBehaviour nextState)

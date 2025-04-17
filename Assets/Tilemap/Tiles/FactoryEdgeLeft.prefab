@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7629349620761795582}
   - component: {fileID: 4605364611595718934}
   - component: {fileID: 6725064087940387867}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FactoryEdgeLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}

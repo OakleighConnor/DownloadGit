@@ -36,21 +36,14 @@ namespace Player
         [Header("Collision + Hitboxes")]
         public LayerMask ground;
         public LayerMask headHitbox;
-        public float rayOffsetX;
-        public float rayOffsetY;
-        public float checkLength;
+        public float rayOffsetX; // = 0f;
+        public float rayOffsetY; // = -1.05f;
+        public float checkLength; // = 0.4f; 
         public GameObject hitboxes;
 
         [Header("Camera")]
         public Transform cameraPos;
-
-        /*[Header("StateMachine")]
-        public StateMachine sm;
-        public IdleState idleState;
-        public MovementState movementState;
-        public JumpState jumpState;
-        public FallingState fallingState;
-        public StaggeredState staggeredState;*/
+        
         [Header("States")]
         public IdleState _idleState;
         public MovementState _movementState;
@@ -99,6 +92,44 @@ namespace Player
             stateMachines.Add(playerMachine);
         }
 
+        private void Awake()
+        {
+            cc = GetComponent<NetworkCharacterController>();
+            anim = GetComponentInChildren<Animator>();
+        }
+        public override void Spawned() // Spawns player input component + canera and assigns input variables in the Spawner script
+        {
+            if(HasInputAuthority)
+            {
+                Spawner networkRunnerScript = FindAnyObjectByType<Spawner>();
+                
+                if(networkRunnerScript == null)
+                {
+                    Debug.LogError("No NetworkRunnerScript found. Did you try entering play mode from the Menu instead of the level?");
+                    return;
+                }
+
+                PlayerInputScript playerInputScript = Instantiate(playerInputPF).GetComponent<PlayerInputScript>();
+                playerInputScript.GetComponentInChildren<Camera>().enabled = true;
+                playerInputScript.GetComponentInChildren<CameraScript>().playerCameraPos = cameraPos;
+
+                if(!localPlayer)
+                {
+                    // Player 1
+                    networkRunnerScript.inputP1 = playerInputScript;
+                }
+                else
+                {
+                    // Player 2
+                    networkRunnerScript.inputP2 = playerInputScript;
+                }
+            }
+            else
+            {
+                // Doesn't have input authority
+            }
+        }
+        
         public override void FixedUpdateNetwork()
         {
             if(GetInput(out NetworkInputData data))
@@ -125,20 +156,6 @@ namespace Player
             }
             else return false;
         }
-
-        /*public bool Grounded() // Performs a raycast to check for ground layer
-        {
-            // Raycast values
-            Vector3 rayPos;
-            rayPos = new Vector3(transform.position.x + rayOffsetX, transform.position.y + rayOffsetY, transform.position.z);
-
-            // Debug
-            Debug.DrawRay(rayPos, Vector3.down * checkLength, Color.green);
-
-            // Raycast
-            LagCompensatedHit hitInfo;
-            return Runner.LagCompensation.Raycast(rayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headHitbox, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority);
-        }*/
         bool CheckForIdle() => dir.x == 0 && Grounded(); // Checks for no player movement input & ground
         bool CheckForMovement() => dir.x != 0 && Grounded(); // Checks for player movement input & ground
         bool CheckForJump() => buttons.IsSet(jumpInput) && Grounded(); // Checks for player jump inputs & ground
@@ -181,117 +198,11 @@ namespace Player
             buttons = data.buttonsP2;
             jumpInput = NetworkInputData.jumpP2;
         }
-
-        private void Awake()
-        {
-            cc = GetComponent<NetworkCharacterController>();
-            anim = GetComponentInChildren<Animator>();
-            //sm = gameObject.AddComponent<StateMachine>();
-
-            /* OLD STATE MACHINE
-
-            // add new states here
-            idleState = new IdleState(this, sm);
-            movementState = new MovementState(this, sm);
-            jumpState = new JumpState(this,sm);
-            fallingState = new FallingState(this,sm);
-            staggeredState = new StaggeredState(this, sm);
-
-            // initialise the statemachine with the default state
-            sm.Init(idleState);*/
-        }
-
-        public override void Spawned()
-        {
-            if(HasInputAuthority)
-            {
-                //hitboxes.SetActive(false);
-
-                Spawner networkRunnerScript = FindAnyObjectByType<Spawner>();
-                
-                if(networkRunnerScript == null)
-                {
-                    Debug.LogError("No NetworkRunnerScript found. Did you try entering play mode from the Menu instead of the level?");
-                    return;
-                }
-
-                PlayerInputScript playerInputScript = Instantiate(playerInputPF).GetComponent<PlayerInputScript>();
-                playerInputScript.GetComponentInChildren<Camera>().enabled = true;
-                playerInputScript.GetComponentInChildren<CameraScript>().playerCameraPos = cameraPos;
-
-                if(!localPlayer)
-                {
-                    // Player 1
-                    networkRunnerScript.inputP1 = playerInputScript;
-                }
-                else
-                {
-                    // Player 2
-                    networkRunnerScript.inputP2 = playerInputScript;
-                }
-            }
-            else
-            {
-                // Doesn't have input authority
-            }
-        }
-
         public void Move()
         {
             dir.Normalize();
             cc.Move(cc.maxSpeed * dir * 1000 * Runner.DeltaTime);
         }
-
-        public override void Render()
-        {
-            AnimatePlayer();
-        }
-
-        void AnimatePlayer()
-        {
-            if(lastAnim != currentAnim)
-            {
-                anim.Play(currentAnim);
-                lastAnim = currentAnim;
-            }
-        }
-
-        void Update()
-        {
-            /* OLD STATE MACHINE
-            sm.CurrentState.LogicUpdate();*/
-        }
-
-        /*public override void FixedUpdateNetwork()
-        {
-            if(GetInput(out NetworkInputData data))
-            {
-                applyInput.Invoke(data);
-
-                // When attempting to read inputs from here in checks, buttons.IsSet() does not function correctly
-                // To fix this, I perform the checks here, checking the current state and any other conditions
-
-                //  if(Grounded()) CheckForJump();
-
-                //  CheckForEntityBelow();
-            }
-
-            
-            // sm.CurrentState.PhysicsUpdate(); OLD SM 
-        }*/
-
-        public void AnimateMovement()
-        {
-            if(dir.x < 0)
-            {
-                currentAnim = "Run Left";
-            }
-            else if(dir.x > 0)
-            {
-                currentAnim = "Run Right";
-            }
-        }
-
         public void Damage()
         {
             Debug.Log("DAMAGED");
