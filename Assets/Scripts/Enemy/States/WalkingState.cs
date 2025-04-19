@@ -37,7 +37,7 @@ namespace Enemy
 
         protected override void OnEnterStateRender()
         {
-            
+            enemy.anim.Play("Walk");
         }
 
         protected override void OnRender()

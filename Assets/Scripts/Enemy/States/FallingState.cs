@@ -32,7 +32,7 @@ namespace Enemy
 
         protected override void OnEnterStateRender()
         {
-            
+            enemy.anim.Play("Fall");
         }
 
         protected override void OnRender()

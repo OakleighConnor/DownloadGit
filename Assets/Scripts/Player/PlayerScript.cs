@@ -31,17 +31,17 @@ namespace Player
 
         [Header("Animation")]
         public Animator anim;
-        public string currentAnim;
-        public string lastAnim;
-        public int staggerDuration;
 
-        [Header("Collision + Hitboxes")]
+        [Header("Collision")]
         public LayerMask ground;
-        public LayerMask headHitbox;
+        public LayerMask headLayer;
         public float rayOffsetX; // = 0f;
         public float rayOffsetY; // = -1.05f;
         public float checkLength; // = 0.4f; 
-        public GameObject hitboxes;
+        [Header("Hitboxes")]
+        public Hitbox[] hitboxes;
+        public HitboxRoot hr;
+
 
         [Header("Camera")]
         public Transform cameraPos;
@@ -98,6 +98,7 @@ namespace Player
         {
             cc = GetComponent<NetworkCharacterController>();
             anim = GetComponentInChildren<Animator>();
+            hr = GetComponent<HitboxRoot>();
         }
         public override void Spawned() // Spawns player input component + canera and assigns input variables in the Spawner script
         {
@@ -175,7 +176,7 @@ namespace Player
 
             // Raycast
             LagCompensatedHit hitInfo;
-            if(Runner.LagCompensation.Raycast(rayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headHitbox, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority | HitOptions.SubtickAccuracy))
+            if(Runner.LagCompensation.Raycast(rayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority | HitOptions.SubtickAccuracy))
             {
                 Debug.Log("Hit");
 
@@ -223,6 +224,14 @@ namespace Player
         {
             Debug.Log("DAMAGED");
             playerMachine.ForceActivateState<StaggeredState>();
+        }
+
+        public void ToggleHitboxes(bool state) // Changes the state of the hixboxes to whatever is passed through the method
+        {
+            foreach(Hitbox hitbox in hitboxes)
+            {
+                hr.SetHitboxActive(hitbox, state);
+            }
         }
     }
 

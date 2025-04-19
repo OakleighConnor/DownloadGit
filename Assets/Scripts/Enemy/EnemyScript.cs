@@ -1,10 +1,9 @@
 using Fusion;
 using Fusion.Addons.Physics;
-using Fusion.LagCompensation;
 using UnityEngine;
 using Fusion.Addons.FSM;
 using System.Collections.Generic;
-using Player;
+
 namespace Enemy
 {
     [RequireComponent(typeof(StateMachineController))]
@@ -13,33 +12,43 @@ namespace Enemy
         [Header("EnemyStats")]
         public float walkSpeed;
         public float activeSpeed;
+        public float startSpinSpeed;
+        public float staggerDuration;
 
         [Header("Raycast Values")]
+        public float rayLength;
         public LayerMask ground;
-        public LayerMask collidable;
         public LayerMask player;
-        public Transform edgeCheckPos;
+        public LayerMask collideable;
+        public Transform groundCheckPos, edgeCheckPos;
+
+        [Header("Hitboxes")]
+        public HitboxRoot hr;
+        public Hitbox[] hitboxes;
         
         [Header("Debugs")]
-        public bool grounded, nearEdge, collided;
+        public bool grounded;
+        public bool nearEdge;
 
         [Header("Components")]
         public NetworkRigidbody3D rb;
+        public Animator anim;
+        public GameObject body;
 
         [Header("States")]
         public WalkingState _walkingState;
         public TurningState _turningState;
         public FallingState _fallingState;
         public StaggeredState _staggeredState;
+
         [Header("StateMachines")]
         private StateMachine<EnemyStateBehaviour> enemyMachine;
-
-
         void Awake()
         {
             rb = GetComponent<NetworkRigidbody3D>();
+            anim = GetComponentInChildren<Animator>();
+            hr = GetComponent<HitboxRoot>();
         }
-
         void IStateMachineOwner.CollectStateMachines(List<IStateMachine> stateMachines) // Creates State Machine, Initializes States & Assigns State Transitions
         {
             enemyMachine = new StateMachine<EnemyStateBehaviour>("Enemy Behaviour", _walkingState, _turningState, _fallingState, _staggeredState);
@@ -62,27 +71,10 @@ namespace Enemy
             // Adds created state machines to state machines
             stateMachines.Add(enemyMachine);
         }
-
         public override void FixedUpdateNetwork() 
         {
-            /*grounded = Grounded();
-
-            if(Grounded())
-            {
-                if(CheckForEdge() || CheckForCollision())
-                {
-                    Debug.Log("Near Edge");
-                    Turn();
-                }
-                else 
-                {
-                    Move();
-                }
-            }*/
-
             Move();
         }
-
         public void Move()
         {
             if(activeSpeed == 0) return;
@@ -90,54 +82,34 @@ namespace Enemy
             rb.Rigidbody.AddForce(transform.forward * activeSpeed * 5 * 1000 * Runner.DeltaTime, ForceMode.Force);
             rb.Rigidbody.linearVelocity = Vector3.ClampMagnitude(rb.Rigidbody.linearVelocity, activeSpeed);
         }
-
         public void Turn() // Turn the enemy around
         {
             rb.Rigidbody.linearVelocity = new Vector3(0,0,0);
             transform.Rotate(0,180,0);
         }
-
-        /*bool Grounded(Vector3 rayPos) // Performs a raycast to check for ground layer
-        {
-            Debug.Log("Ground Check");
-
-            // Debug
-            Debug.DrawRay(rayPos, Vector3.down * 0.5f, Color.green);
-
-            RaycastHit hit;
-            // Does the ray intersect any objects excluding the player layer
-            if (Physics.Raycast(rayPos, Vector3.down, out hit, 0.7f, ground))
-            {
-                Debug.Log("Grounded");
-                return true;
-            }
-            else return false;
-        }*/
-
         public bool CheckForCollision() // Checks for walls or other enemies and turns around if collision occurs
         {
-            Debug.DrawRay(transform.position, transform.forward * 1, Color.green);
+            Debug.DrawRay(groundCheckPos.position, transform.forward * rayLength, Color.green);
 
             RaycastHit hit;
             // Does the ray intersect any objects excluding the player layer
-            if (Physics.Raycast(transform.position, transform.forward, out hit, 1, collidable))
+            if (Physics.Raycast(groundCheckPos.position, transform.forward, out hit, rayLength, collideable))
             {
                 return true;
             }
             else return false;
         }
-
         public void CheckForPlayerCollision() // Checks for player. If player collision then damage the player
         {
             Vector3[] directions = new Vector3[] { Vector3.left, Vector3.right };
 
-            float checkLength = .25f;
-
             foreach(Vector3 direction in directions)
             {
+                Debug.DrawRay(groundCheckPos.position, direction * rayLength, Color.blue);
+
                 LagCompensatedHit hitInfo;
 
-                if(Runner.LagCompensation.Raycast(transform.position, direction, checkLength * 2, Object.InputAuthority, out hitInfo, player, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority))
+                if(Runner.LagCompensation.Raycast(groundCheckPos.position, direction, rayLength * 2, Object.InputAuthority, out hitInfo, player, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority))
                 {
                     IDamageable damageable = hitInfo.GameObject.GetComponentInParent<IDamageable>();
 
@@ -151,29 +123,34 @@ namespace Enemy
                 }
             }
         }
-
-        public void Damage()
+        public void Damage() // Triggers the StaggeredState of the enemy (IDamagable)
         {
             Debug.Log("DAMAGED ENEMY");
             enemyMachine.ForceActivateState<StaggeredState>();
         }
-
         public bool CheckForEdge() => !RaycastDown(edgeCheckPos.position); // True if there is no ground in the position the enemy checks for the edge
-        public bool CheckForLand() => RaycastDown(transform.position); // True if ground is beneath the enemy
-        public bool CheckForFall() => !RaycastDown(transform.position);
+        public bool CheckForLand() => RaycastDown(groundCheckPos.position); // True if ground is beneath the enemy
+        public bool CheckForFall() => !RaycastDown(groundCheckPos.position);
         public bool RaycastDown(Vector3 rayPos) // Performs the Raycasts down
         {
             // Debug
-            Debug.DrawRay(rayPos, Vector3.down * 0.5f, Color.green);
+            Debug.DrawRay(rayPos, Vector3.down * rayLength, Color.green);
 
             RaycastHit hit;
             // Does the ray intersect any objects excluding the player layer
-            if (Physics.Raycast(rayPos, Vector3.down, out hit, 0.7f, ground))
+            if (Physics.Raycast(rayPos, Vector3.down, out hit, rayLength, ground))
             {
                 Debug.Log("Grounded");
                 return true;
             }
             else return false;
+        }
+        public void ToggleHitboxes(bool state) // Changes the state of the hixboxes to whatever is passed through the method
+        {
+            foreach(Hitbox hitbox in hitboxes)
+            {
+                hr.SetHitboxActive(hitbox, state);
+            }
         }
     }
 
