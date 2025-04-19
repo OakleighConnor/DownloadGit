@@ -88,7 +88,7 @@ namespace Player
             // Fall Transitions
             _fallingState.AddTransition(_idleState, CheckForIdle);
             _fallingState.AddTransition(_movementState, CheckForMovement);
-            _fallingState.AddTransition(_jumpState, CheckForBounce);
+            if(Object.HasStateAuthority) _fallingState.AddTransition(_jumpState, CheckForBounce);
             
             // Adds created state machines to state machines
             stateMachines.Add(playerMachine);
