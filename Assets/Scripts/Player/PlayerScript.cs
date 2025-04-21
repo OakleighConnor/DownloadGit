@@ -35,12 +35,14 @@ namespace Player
         [Header("Collision")]
         public LayerMask ground;
         public LayerMask headLayer;
+        public LayerMask localHeadLayer;
         public float rayOffsetX; // = 0f;
         public float rayOffsetY; // = -1.05f;
         public float checkLength; // = 0.4f; 
         [Header("Hitboxes")]
         public Hitbox[] hitboxes;
         public HitboxRoot hr;
+        public GameObject localHeadHitbox;
 
 
         [Header("Camera")]
@@ -102,6 +104,7 @@ namespace Player
         }
         public override void Spawned() // Spawns player input component + canera and assigns input variables in the Spawner script
         {
+
             if(HasInputAuthority)
             {
                 Spawner networkRunnerScript = FindAnyObjectByType<Spawner>();
@@ -129,7 +132,7 @@ namespace Player
             }
             else
             {
-                // Doesn't have input authority
+                localHeadHitbox.SetActive(false);
             }
         }
         
@@ -167,6 +170,9 @@ namespace Player
         bool CheckForFall() => cc.Velocity.y <= 0 && !Grounded(); // Checks for downwards velocity & no ground
         bool CheckForBounce() // Checks for hitboxes below the player & calls the interface IDamageable if the hitbox contains it
         {
+
+            // PERFORM PHYSICS RAYCAST CHECKING FOR A LOCAL PLAYER
+
             // Raycast values
             Vector3 rayPos;
             rayPos = new Vector3(transform.position.x, transform.position.y + rayOffsetY, transform.position.z);
@@ -176,7 +182,7 @@ namespace Player
 
             // Raycast
             LagCompensatedHit hitInfo;
-            if(Runner.LagCompensation.Raycast(rayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority | HitOptions.SubtickAccuracy))
+            if(Runner.LagCompensation.Raycast(rayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority))
             {
                 Debug.Log("Hit");
 

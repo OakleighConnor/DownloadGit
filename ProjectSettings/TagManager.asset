@@ -16,7 +16,7 @@ TagManager:
   - HeadHitbox
   - EnemyHitbox
   - Enemy
-  - 
+  - LocalHeadHitbox
   - 
   - 
   - 

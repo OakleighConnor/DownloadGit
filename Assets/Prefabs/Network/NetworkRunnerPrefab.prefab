@@ -63,7 +63,7 @@ MonoBehaviour:
   player1PF:
     RawGuidValue: 230c7deabb57c274fbcf24a905464349
   player2PF:
-    RawGuidValue: 9c215fbab6b50fc4ab515d6e5940d83b
+    RawGuidValue: 91b8ca18ca5e61145bc5532aa5a4cc1a
   codeManager: {fileID: 11400000, guid: ced723a2e9823e545aeac7d9daba9655, type: 2}
   localPlay: 0
   inputP1: {fileID: 0}

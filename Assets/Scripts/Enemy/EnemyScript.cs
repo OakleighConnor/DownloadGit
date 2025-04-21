@@ -116,7 +116,6 @@ namespace Enemy
                     // If enemy collides with a player then damage the player
                     if (damageable != null)
                     {
-                        Debug.Log("Hit Player");
                         damageable.Damage();
                         return;
                     }
