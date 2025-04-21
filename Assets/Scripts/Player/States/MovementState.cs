@@ -46,7 +46,7 @@ namespace Player
             {
                 player.anim.Play("Run Left");
             }
-            else if(player.dir.x > 0)
+            else
             {
                 player.anim.Play("Run Right");
             }

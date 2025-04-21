@@ -8,13 +8,10 @@ namespace Player
 {
     public class PlayerStateBehaviour  : StateBehaviour<PlayerStateBehaviour>
     {
-        [Header("Components")]
-        public PlayerScript player;
-
-        [Header("Inputs")]
-        public NetworkButtons buttons;
-        public byte jumpInput;
-        public Vector3 dir;
+        protected PlayerScript player;
+        protected NetworkButtons buttons;
+        protected byte jumpInput;
+        protected Vector3 dir;
 
         // Called by the Player script when initializing the FSM
         public void Initialize(PlayerScript player)

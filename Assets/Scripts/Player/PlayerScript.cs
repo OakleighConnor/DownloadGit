@@ -39,11 +39,11 @@ namespace Player
         public float rayOffsetX; // = 0f;
         public float rayOffsetY; // = -1.05f;
         public float checkLength; // = 0.4f; 
-        [Header("Hitboxes")]
-        public Hitbox[] hitboxes;
-        public HitboxRoot hr;
-        public GameObject localHeadHitbox;
 
+        [Header("Hitboxes")]
+        public GameObject localHitboxes;
+        Hitbox[] hitboxes;
+        HitboxRoot hr;
 
         [Header("Camera")]
         public Transform cameraPos;
@@ -54,12 +54,18 @@ namespace Player
         public JumpState _jumpState;
         public FallingState _fallingState;
         public StaggeredState _staggeredState;
+
         [Header("StateMachines")]
         private StateMachine<PlayerStateBehaviour> playerMachine;
 
-        // WHEN CREATING NEW STATES AND MACHINES UPDATE THIS METHOD
-        void IStateMachineOwner.CollectStateMachines(List<IStateMachine> stateMachines) // Creates State Machine, Initializes States & Assigns State Transitions 
+        void IStateMachineOwner.CollectStateMachines(List<IStateMachine> stateMachines) // Creates State Machine, Initializes States & Assigns State Transitions. Update when implementing new states
         {
+            _idleState = GetComponentInChildren<IdleState>();
+            _movementState = GetComponentInChildren<MovementState>();
+            _jumpState = GetComponentInChildren<JumpState>();
+            _fallingState = GetComponentInChildren<FallingState>();
+            _staggeredState = GetComponentInChildren<StaggeredState>();
+
             // Creates new state machines
             playerMachine = new StateMachine<PlayerStateBehaviour>("Player Behaviour", _idleState, _movementState, _jumpState, _fallingState, _staggeredState);
 
@@ -95,16 +101,20 @@ namespace Player
             // Adds created state machines to state machines
             stateMachines.Add(playerMachine);
         }
-
         private void Awake()
         {
+            // Character Controller
             cc = GetComponent<NetworkCharacterController>();
+
+            // Animation
             anim = GetComponentInChildren<Animator>();
+            
+            // Photon Fusion Hitboxes
+            hitboxes = GetComponentsInChildren<Hitbox>();
             hr = GetComponent<HitboxRoot>();
         }
         public override void Spawned() // Spawns player input component + canera and assigns input variables in the Spawner script
         {
-
             if(HasInputAuthority)
             {
                 Spawner networkRunnerScript = FindAnyObjectByType<Spawner>();
@@ -132,10 +142,9 @@ namespace Player
             }
             else
             {
-                localHeadHitbox.SetActive(false);
+                localHitboxes.SetActive(false);
             }
         }
-        
         public override void FixedUpdateNetwork()
         {
             if(GetInput(out NetworkInputData data))
@@ -168,11 +177,8 @@ namespace Player
         bool CheckForMovement() => dir.x != 0 && Grounded(); // Checks for player movement input & ground
         bool CheckForJump() => buttons.IsSet(jumpInput) && Grounded(); // Checks for player jump inputs & ground
         bool CheckForFall() => cc.Velocity.y <= 0 && !Grounded(); // Checks for downwards velocity & no ground
-        bool CheckForBounce() // Checks for hitboxes below the player & calls the interface IDamageable if the hitbox contains it
+        bool CheckForBounce() // Performs lag compensated raycast checking for hitboxes. Must only be executed on state authority
         {
-
-            // PERFORM PHYSICS RAYCAST CHECKING FOR A LOCAL PLAYER
-
             // Raycast values
             Vector3 rayPos;
             rayPos = new Vector3(transform.position.x, transform.position.y + rayOffsetY, transform.position.z);
@@ -182,20 +188,19 @@ namespace Player
 
             // Raycast
             LagCompensatedHit hitInfo;
-            if(Runner.LagCompensation.Raycast(rayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority))
+            if(Runner.LagCompensation.Raycast(rayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX))
             {
-                Debug.Log("Hit");
-
-                // Checks for IDamageable
-                IDamageable damageable = hitInfo.Hitbox.GetComponentInParent<IDamageable>();
-                if(damageable != null) 
-                {
-                    Debug.Log("IDamageable found. Calling Damage()");
-                    damageable.Damage();
-                }
+                Debug.Log("Online Hit");
+                InflictDamage(hitInfo.Hitbox.GetComponentInParent<IDamageable>());
                 return true;
             }
             return false;
+        }
+        void InflictDamage(IDamageable damageable) // Calls Damage() in opponents that have been damaged
+        {
+            if(damageable == null) return;
+            Debug.Log("IDamageable found. Calling Damage()");
+            damageable.Damage();
         }
         public void ApplyInputP1(NetworkInputData data) // Sets dir, buttons & jumpInput to Player 1 Inputs
         {
@@ -209,10 +214,8 @@ namespace Player
             buttons = data.buttonsP2;
             jumpInput = NetworkInputData.jumpP2;
         }
-        public void Move()
+        public void Move() // cc.Move must always be called if gravity is to impact the player
         {
-            // cc.Move must always be called if gravity is to impact the player
-
             float speed;
             if(moving)
             {
@@ -226,12 +229,11 @@ namespace Player
             dir.Normalize();
             cc.Move(speed * dir * 1000 * Runner.DeltaTime);
         }
-        public void Damage()
+        public void Damage() // IDamageable Interface
         {
             Debug.Log("DAMAGED");
             playerMachine.ForceActivateState<StaggeredState>();
         }
-
         public void ToggleHitboxes(bool state) // Changes the state of the hixboxes to whatever is passed through the method
         {
             foreach(Hitbox hitbox in hitboxes)
