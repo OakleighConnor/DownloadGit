@@ -94,14 +94,16 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
         if(inputP1 != null)
         {
             data.directionP1 += inputP1.movementInput;
-            data.buttonsP1.Set(NetworkInputData.jumpP1, inputP1.jumpInput);
+            data.jumpButtonsP1.Set(NetworkInputData.jumpP1, inputP1.jumpInput);
+            data.actionButtonsP1.Set(NetworkInputData.actionP1, inputP1.actionInput);
             inputP1.jumpInput = false;
         }
 
         if(inputP2 != null)
         {
             data.directionP2 += inputP2.movementInput;
-            data.buttonsP2.Set(NetworkInputData.jumpP2, inputP2.jumpInput);
+            data.jumpButtonsP2.Set(NetworkInputData.jumpP2, inputP2.jumpInput);
+            data.actionButtonsP2.Set(NetworkInputData.actionP2, inputP2.actionInput);
             inputP2.jumpInput = false;
         }
 

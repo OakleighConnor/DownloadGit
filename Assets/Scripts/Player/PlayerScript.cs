@@ -20,8 +20,10 @@ namespace Player
         public GameObject playerInputPF;
 
         [Header("Inputs")]
-        public byte jumpInput;
-        public NetworkButtons buttons;
+        byte jumpInput;
+        byte actionInput;
+        public NetworkButtons jumpButtons;
+        public NetworkButtons actionButtons;
         public Vector2 dir;
 
         [Header("Player Movement")]
@@ -32,16 +34,20 @@ namespace Player
         [Header("Animation")]
         public Animator anim;
 
-        [Header("Collision")]
+        [Header("Raycasts")]
         public LayerMask ground;
         public LayerMask headLayer;
-        public LayerMask localHeadLayer;
+        public LayerMask pickUpLayerMask;
         public float rayOffsetX; // = 0f;
         public float rayOffsetY; // = -1.05f;
-        public float checkLength; // = 0.4f; 
+        public float checkLength; // = 0.4f;
+
+        [Header("Attack")]
+        public Transform attackPos;
+        public GameObject heldObjectPos;
+        public GameObject heldObject;
 
         [Header("Hitboxes")]
-        public GameObject localHitboxes;
         Hitbox[] hitboxes;
         HitboxRoot hr;
 
@@ -49,25 +55,35 @@ namespace Player
         public Transform cameraPos;
         
         [Header("States")]
-        public IdleState _idleState;
-        public MovementState _movementState;
-        public JumpState _jumpState;
-        public FallingState _fallingState;
-        public StaggeredState _staggeredState;
+        [HideInInspector] public IdleState _idleState;
+        [HideInInspector] public MovementState _movementState;
+        [HideInInspector] public JumpState _jumpState;
+        [HideInInspector] public FallingState _fallingState;
+        [HideInInspector] public StaggeredState _staggeredState;
+        [HideInInspector] public NeutralState _neutralState;
+        [HideInInspector] public HoldingState _holdingState;
 
         [Header("StateMachines")]
-        private StateMachine<PlayerStateBehaviour> playerMachine;
+        StateMachine<PlayerStateBehaviour> movementMachine;
+        StateMachine<PlayerStateBehaviour> attackMachine;
+        
 
         void IStateMachineOwner.CollectStateMachines(List<IStateMachine> stateMachines) // Creates State Machine, Initializes States & Assigns State Transitions. Update when implementing new states
         {
+            // Movement FSM
             _idleState = GetComponentInChildren<IdleState>();
             _movementState = GetComponentInChildren<MovementState>();
             _jumpState = GetComponentInChildren<JumpState>();
             _fallingState = GetComponentInChildren<FallingState>();
             _staggeredState = GetComponentInChildren<StaggeredState>();
 
+            // Attack FSM
+            _neutralState = GetComponentInChildren<NeutralState>();
+            _holdingState = GetComponentInChildren<HoldingState>();
+            
             // Creates new state machines
-            playerMachine = new StateMachine<PlayerStateBehaviour>("Player Behaviour", _idleState, _movementState, _jumpState, _fallingState, _staggeredState);
+            movementMachine = new StateMachine<PlayerStateBehaviour>("Movement Behaviour", _idleState, _movementState, _jumpState, _fallingState, _staggeredState);
+            attackMachine = new StateMachine<PlayerStateBehaviour>("Attack Behaviour", _neutralState, _holdingState);
 
             // Assign script reference in each of the states
             _idleState.Initialize(this);
@@ -75,9 +91,12 @@ namespace Player
             _jumpState.Initialize(this);
             _fallingState.Initialize(this);
             _staggeredState.Initialize(this);
+            _neutralState.Initialize(this);
+            _holdingState.Initialize(this);
 
             // Assign transitions between states
 
+            // Movement FSM
             // Idle Transitions
             _idleState.AddTransition(_movementState, CheckForMovement);
             _idleState.AddTransition(_jumpState, CheckForJump);
@@ -97,9 +116,17 @@ namespace Player
             _fallingState.AddTransition(_idleState, CheckForIdle);
             _fallingState.AddTransition(_movementState, CheckForMovement);
             if(Object.HasStateAuthority) _fallingState.AddTransition(_jumpState, CheckForBounce);
+
+            // Attacking FSM
+            // Neutral Transitions
+            _neutralState.AddTransition(_holdingState, CheckForPickup);
+
+            // Holding Transitions
+
             
             // Adds created state machines to state machines
-            stateMachines.Add(playerMachine);
+            stateMachines.Add(movementMachine);
+            stateMachines.Add(attackMachine);
         }
         private void Awake()
         {
@@ -142,7 +169,7 @@ namespace Player
             }
             else
             {
-                localHitboxes.SetActive(false);
+                
             }
         }
         public override void FixedUpdateNetwork()
@@ -153,6 +180,7 @@ namespace Player
             }
 
             Move();
+            Debug.Log($"Action Input Pressed: {actionButtons.IsSet(actionInput)}");
         }
         bool Grounded() // Performs a raycast to check for ground layer
         {
@@ -161,21 +189,42 @@ namespace Player
             rayPos = new Vector3(transform.position.x + rayOffsetX, transform.position.y + rayOffsetY, transform.position.z);
 
             // Debug
-            Debug.Log("Ground Check");
             Debug.DrawRay(rayPos, Vector3.down * checkLength, Color.green);
 
             RaycastHit hit;
             // Does the ray intersect any objects excluding the player layer
             if (Physics.Raycast(rayPos, Vector3.down, out hit, checkLength, ground))
             {
-                Debug.Log("Grounded");
                 return true;
             }
             else return false;
         }
         bool CheckForIdle() => dir.x == 0 && Grounded(); // Checks for no player movement input & ground
         bool CheckForMovement() => dir.x != 0 && Grounded(); // Checks for player movement input & ground
-        bool CheckForJump() => buttons.IsSet(jumpInput) && Grounded(); // Checks for player jump inputs & ground
+        bool CheckForJump() => jumpButtons.IsSet(jumpInput) && Grounded(); // Checks for player jump inputs & ground
+        bool CheckForPickup() => actionButtons.IsSet(actionInput); // Checks if the player is using the action input (checks in state if a holdable object is close enough to the player)
+        public bool CheckForThrow() => !actionButtons.IsSet(actionInput);
+        public bool CheckForPickupTarget()
+        {
+            // Debugging
+            Debug.DrawRay(attackPos.position, transform.forward * checkLength, Color.red);
+
+            // Raycast
+            LagCompensatedHit hitInfo;
+            if(Runner.LagCompensation.Raycast(attackPos.position, transform.forward, checkLength, Object.InputAuthority, out hitInfo, pickUpLayerMask, HitOptions.IncludePhysX))
+            {
+                IPickupable pickupable = hitInfo.Hitbox.GetComponentInParent<IPickupable>();
+                if(pickupable != null)
+                {
+                    Debug.Log("Can pick up");
+                    pickupable.PickUp(heldObjectPos);
+                    heldObject = hitInfo.Hitbox.transform.root.gameObject;
+                    Debug.Log(heldObject);
+                    return true;
+                }
+            }
+            return false;
+        }
         bool CheckForFall() => cc.Velocity.y <= 0 && !Grounded(); // Checks for downwards velocity & no ground
         bool CheckForBounce() // Performs lag compensated raycast checking for hitboxes. Must only be executed on state authority
         {
@@ -205,14 +254,18 @@ namespace Player
         public void ApplyInputP1(NetworkInputData data) // Sets dir, buttons & jumpInput to Player 1 Inputs
         {
             dir = data.directionP1;
-            buttons = data.buttonsP1;
+            jumpButtons = data.jumpButtonsP1;
+            actionButtons = data.actionButtonsP1;
             jumpInput = NetworkInputData.jumpP1;
+            actionInput = NetworkInputData.actionP1;
         }
         public void ApplyInputP2(NetworkInputData data) // Sets dir, buttons & jumpInput to Player 2 Inputs
         {
             dir = data.directionP2;
-            buttons = data.buttonsP2;
+            jumpButtons = data.jumpButtonsP2;
+            actionButtons = data.actionButtonsP2;
             jumpInput = NetworkInputData.jumpP2;
+            actionInput = NetworkInputData.actionP2;
         }
         public void Move() // cc.Move must always be called if gravity is to impact the player
         {
@@ -232,7 +285,7 @@ namespace Player
         public void Damage() // IDamageable Interface
         {
             Debug.Log("DAMAGED");
-            playerMachine.ForceActivateState<StaggeredState>();
+            movementMachine.ForceActivateState<StaggeredState>();
         }
         public void ToggleHitboxes(bool state) // Changes the state of the hixboxes to whatever is passed through the method
         {

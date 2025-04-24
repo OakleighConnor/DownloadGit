@@ -20,8 +20,11 @@ namespace Enemy
         protected override void OnEnterState()
         {
             enemy.rb.Rigidbody.linearVelocity = new Vector3(0,0,0);
+
             enemy.anim.Play("Stagger");
-            enemy.ToggleHitboxes(false);
+
+            enemy.hr.SetHitboxActive(enemy.activeHitbox, false);
+            enemy.hr.SetHitboxActive(enemy.staggeredHitbox, true);
         }
 
         protected override void OnFixedUpdate()
@@ -34,7 +37,8 @@ namespace Enemy
         
         protected override void OnExitState()
         {
-            enemy.ToggleHitboxes(true);
+            enemy.hr.SetHitboxActive(enemy.activeHitbox, true);
+            enemy.hr.SetHitboxActive(enemy.staggeredHitbox, false);
         }
 
         protected override void OnEnterStateRender()
@@ -46,10 +50,7 @@ namespace Enemy
         {
             if(Machine.StateTime <= 0) return;
 
-
-            
             float v = enemy.startSpinSpeed * (Mathf.Round(Machine.StateTime * 100) / 100 / enemy.staggerDuration);
-            Debug.Log(v);
 
             enemy.anim.speed = enemy.startSpinSpeed - v;
         }

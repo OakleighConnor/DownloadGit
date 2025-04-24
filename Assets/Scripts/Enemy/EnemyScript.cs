@@ -7,8 +7,10 @@ using System.Collections.Generic;
 namespace Enemy
 {
     [RequireComponent(typeof(StateMachineController))]
-    public class EnemyScript : NetworkBehaviour, IDamageable, IStateMachineOwner
+    public class EnemyScript : NetworkBehaviour, IDamageable, IPickupable, IStateMachineOwner
     {
+        public GameObject holdPos;
+
         [Header("EnemyStats")]
         public float walkSpeed;
         public float activeSpeed;
@@ -24,7 +26,8 @@ namespace Enemy
 
         [Header("Hitboxes")]
         public HitboxRoot hr;
-        public Hitbox[] hitboxes;
+        public Hitbox activeHitbox;
+        public Hitbox staggeredHitbox;
         
         [Header("Debugs")]
         public bool grounded;
@@ -37,9 +40,10 @@ namespace Enemy
 
         [Header("States")]
         public WalkingState _walkingState;
-        public TurningState _turningState;
         public FallingState _fallingState;
         public StaggeredState _staggeredState;
+        public HeldState _heldState;
+        public SlidingState _slidingState;
 
         [Header("StateMachines")]
         private StateMachine<EnemyStateBehaviour> enemyMachine;
@@ -51,13 +55,20 @@ namespace Enemy
         }
         void IStateMachineOwner.CollectStateMachines(List<IStateMachine> stateMachines) // Creates State Machine, Initializes States & Assigns State Transitions
         {
-            enemyMachine = new StateMachine<EnemyStateBehaviour>("Enemy Behaviour", _walkingState, _turningState, _fallingState, _staggeredState);
+            _walkingState = GetComponentInChildren<WalkingState>();
+            _fallingState = GetComponentInChildren<FallingState>();
+            _staggeredState = GetComponentInChildren<StaggeredState>();
+            _heldState = GetComponentInChildren<HeldState>();
+            _slidingState = GetComponentInChildren<SlidingState>();
+
+            enemyMachine = new StateMachine<EnemyStateBehaviour>("Enemy Behaviour", _walkingState, _fallingState, _staggeredState, _heldState, _slidingState);
             
             // Assign script reference in each of the states
             _walkingState.Initialize(this);
-            _turningState.Initialize(this);
             _fallingState.Initialize(this);
             _staggeredState.Initialize(this);
+            _heldState.Initialize(this);
+            _slidingState.Initialize(this);
 
     
             // Assign transitions between states
@@ -139,17 +150,18 @@ namespace Enemy
             // Does the ray intersect any objects excluding the player layer
             if (Physics.Raycast(rayPos, Vector3.down, out hit, rayLength, ground))
             {
-                Debug.Log("Grounded");
                 return true;
             }
             else return false;
         }
-        public void ToggleHitboxes(bool state) // Changes the state of the hixboxes to whatever is passed through the method
+        public void PickUp(GameObject holdPos)
         {
-            foreach(Hitbox hitbox in hitboxes)
-            {
-                hr.SetHitboxActive(hitbox, state);
-            }
+            this.holdPos = holdPos;
+            enemyMachine.ForceActivateState<HeldState>();
+        }
+        public void Throw()
+        {
+            Debug.Log("Enemy thrown");
         }
     }
 

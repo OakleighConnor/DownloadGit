@@ -5,8 +5,7 @@ namespace Enemy
 {
     public class EnemyStateBehaviour : StateBehaviour<EnemyStateBehaviour>
     {
-        [Header("Components")]
-        public EnemyScript enemy;
+        protected EnemyScript enemy;
 
         // Called by the Player script when initializing the FSM
         public void Initialize(EnemyScript enemy)
