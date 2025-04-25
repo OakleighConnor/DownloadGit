@@ -6,7 +6,7 @@ namespace Player
     {
         protected override bool CanEnterState()
         {
-            return base.CanEnterState();
+            return player.grounded;
         }
 
         protected override bool CanExitState(PlayerStateBehaviour nextState)

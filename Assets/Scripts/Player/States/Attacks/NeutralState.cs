@@ -21,7 +21,6 @@ namespace Player
 
         protected override void OnFixedUpdate()
         {
-            Debug.Log("Neutral ...");
         }
         
         protected override void OnExitState()

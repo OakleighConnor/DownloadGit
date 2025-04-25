@@ -26,6 +26,7 @@ namespace Player
         byte actionInput;
         public NetworkButtons jumpButtons;
         public NetworkButtons actionButtons;
+        public NetworkButtons previousButtons;
         public Vector2 dir;
 
         [Header("Player Movement")]
@@ -37,6 +38,7 @@ namespace Player
         public Animator anim;
 
         [Header("Raycasts")]
+        public bool grounded;
         public LayerMask ground;
         public LayerMask headLayer;
         public LayerMask pickUpLayerMask;
@@ -103,30 +105,30 @@ namespace Player
 
             // Movement FSM
             // Idle Transitions
-            _idleState.AddTransition(_movementState, CheckForMovement);
-            _idleState.AddTransition(_jumpState, CheckForJump);
+            _idleState.AddTransition(_movementState, CheckForMovement, grounded);
+            _idleState.AddTransition(_jumpState, CheckForJump, grounded);
             _idleState.AddTransition(_fallingState, CheckForFall);
 
             // Movement Transitions
-            _movementState.AddTransition(_idleState, CheckForIdle);
-            _movementState.AddTransition(_jumpState, CheckForJump);
-            _movementState.AddTransition(_fallingState, CheckForFall);
+            _movementState.AddTransition(_idleState, CheckForIdle, grounded);
+            _movementState.AddTransition(_jumpState, CheckForJump, grounded);
+            _movementState.AddTransition(_fallingState, CheckForFall, !grounded);
 
             // Jump Transitions
-            _jumpState.AddTransition(_idleState, CheckForIdle);
-            _jumpState.AddTransition(_movementState, CheckForMovement);
-            _jumpState.AddTransition(_fallingState, CheckForFall);
+            _jumpState.AddTransition(_idleState, CheckForIdle, grounded);
+            _jumpState.AddTransition(_movementState, CheckForMovement, grounded);
+            _jumpState.AddTransition(_fallingState, CheckForFall, !grounded);
 
             // Fall Transitions
-            _fallingState.AddTransition(_idleState, CheckForIdle);
-            _fallingState.AddTransition(_movementState, CheckForMovement);
+            _fallingState.AddTransition(_idleState, CheckForIdle, grounded);
+            _fallingState.AddTransition(_movementState, CheckForMovement, grounded);
             if(Object.HasStateAuthority) _fallingState.AddTransition(_jumpState, CheckForBounce);
 
             // Attacking FSM
             // Neutral Transitions
             _neutralState.AddTransition(_holdingState, CheckForPickup);
 
-            // Holding Transitions
+            // Holding Transition
 
             
             // Adds created state machines to state machines
@@ -185,8 +187,28 @@ namespace Player
             }
 
             Move();
+            GroundCheck();
         }
-        bool Grounded() // Performs a raycast to check for ground layer
+        void GroundCheck()
+        {
+            if (!Object.HasStateAuthority) return;
+
+            // Raycast values
+            Vector3 rayPos;
+            rayPos = new Vector3(transform.position.x + rayOffsetX, transform.position.y + rayOffsetY, transform.position.z);
+
+            // Debug
+            Debug.DrawRay(rayPos, Vector3.down * checkLength, Color.green);
+
+            RaycastHit hit;
+            // Does the ray intersect any objects excluding the player layer
+            if (Physics.Raycast(rayPos, Vector3.down, out hit, checkLength, ground))
+            {
+                grounded = true;
+            }
+            else grounded = false;
+        }
+        public bool Grounded() // Performs a raycast to check for ground layer
         {
             // Raycast values
             Vector3 rayPos;
@@ -203,9 +225,9 @@ namespace Player
             }
             else return false;
         }
-        bool CheckForIdle() => dir.x == 0 && Grounded(); // Checks for no player movement input & ground
-        bool CheckForMovement() => dir.x != 0 && Grounded(); // Checks for player movement input & ground
-        bool CheckForJump() => jumpButtons.IsSet(jumpInput) && Grounded(); // Checks for player jump inputs & ground
+        bool CheckForIdle() => dir.x == 0; // Checks for no player movement input & ground
+        bool CheckForMovement() => dir.x != 0; // Checks for player movement input & ground
+        bool CheckForJump() => jumpButtons.IsSet(jumpInput); // Checks for player jump inputs & ground
         bool CheckForPickup() => actionButtons.IsSet(actionInput); // Checks if the player is using the action input (checks in state if a holdable object is close enough to the player)
         public bool CheckForThrow() => !actionButtons.IsSet(actionInput);
         public bool CheckForPickupTarget()
@@ -230,6 +252,7 @@ namespace Player
         }
         void HoldObject(GameObject obj, GameObject objectVisual) // Places the visual the player will hold where they should hold it
         {
+            if (heldObjectVisual != null) return;
             heldObjectVisual = objectVisual;
             heldObjectPF = Resources.Load(obj.tag, typeof(GameObject)) as GameObject;
 
@@ -241,13 +264,14 @@ namespace Player
         {
             if (heldObjectVisual == null || heldObjectPF == null) return;
             Destroy(heldObjectVisual);
-            heldObjectVisual = null;
 
             Debug.Log("Throw");
 
+            heldObjectVisual = null;
+
             if(Object.HasStateAuthority) Runner.Spawn(heldObjectPF, holdPos.position, Quaternion.LookRotation(transform.forward), Object.InputAuthority);
         }
-        bool CheckForFall() => cc.Velocity.y <= 0 && !Grounded(); // Checks for downwards velocity & no ground
+        bool CheckForFall() => cc.Velocity.y <= -0.1f; // Checks for downwards velocity & no ground
         bool CheckForBounce() // Performs lag compensated raycast checking for hitboxes. Must only be executed on state authority
         {
             // Raycast values

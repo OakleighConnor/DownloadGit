@@ -56,6 +56,7 @@ namespace Enemy
         {
             rb = GetComponent<NetworkRigidbody3D>();
             anim = GetComponentInChildren<Animator>();
+
             hr = GetComponent<HitboxRoot>();
         }
         void IStateMachineOwner.CollectStateMachines(List<IStateMachine> stateMachines) // Creates State Machine, Initializes States & Assigns State Transitions
@@ -90,6 +91,10 @@ namespace Enemy
         public override void FixedUpdateNetwork() 
         {
             Move();
+        }
+
+        public override void Spawned()
+        {
         }
         public void Move()
         {

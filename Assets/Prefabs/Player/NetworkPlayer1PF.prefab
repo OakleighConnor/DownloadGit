@@ -463,12 +463,12 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   playerInputPF: {fileID: 329275106461532070, guid: 29bf0ca69f218d147a3f519ac1afcb67, type: 3}
-  basicEnemy: {fileID: 1723638094611281261, guid: 0cdb736b0dd2cc04d9ba0fcd975346ec, type: 3}
   dir: {x: 0, y: 0}
   cc: {fileID: 0}
   bounceHeight: 20
   _moving: 0
   anim: {fileID: 0}
+  grounded: 0
   ground:
     serializedVersion: 2
     m_Bits: 64
@@ -484,6 +484,8 @@ MonoBehaviour:
   attackPos: {fileID: 7642083096871832698}
   holdPos: {fileID: 7179752516660185659}
   heldObject: {fileID: 0}
+  heldObjectPF: {fileID: 0}
+  heldObjectVisual: {fileID: 0}
   cameraPos: {fileID: 4378023543705727318}
   _idleState: {fileID: 245313877790003001}
   _movementState: {fileID: 3717291686793714873}
@@ -554,7 +556,7 @@ CharacterController:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1152
   m_LayerOverridePriority: 0
   m_ProvidesContacts: 0
   m_Enabled: 1

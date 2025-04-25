@@ -17,7 +17,7 @@ namespace Player
 
         protected override void OnEnterState()
         {
-            player.cc.Velocity = new Vector3(player.cc.Velocity.x, 20, player.cc.Velocity.z);
+            if (Object.HasStateAuthority) player.cc.Velocity = new Vector3(player.cc.Velocity.x, 20, player.cc.Velocity.z);
         }
 
         protected override void OnFixedUpdate()
