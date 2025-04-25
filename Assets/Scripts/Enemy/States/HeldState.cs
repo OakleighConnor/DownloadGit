@@ -20,7 +20,8 @@ namespace Enemy
             // Doesnt work
             Debug.Log("Held start");
             enemy.rb.Rigidbody.useGravity = false;
-            enemy.transform.SetParent(enemy.holdPos.transform);
+            enemy.body.transform.SetParent(enemy.holdPos.transform);
+            enemy.body.transform.position = enemy.holdPos.transform.position;
         }
 
         protected override void OnFixedUpdate()
@@ -30,9 +31,6 @@ namespace Enemy
         
         protected override void OnExitState()
         {
-            Debug.Log("Held over");
-            enemy.rb.Rigidbody.useGravity = true;
-            enemy.transform.parent = null;
         }
 
         protected override void OnEnterStateRender()

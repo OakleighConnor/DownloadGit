@@ -3,6 +3,7 @@ using Fusion.Addons.Physics;
 using UnityEngine;
 using Fusion.Addons.FSM;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 
 namespace Enemy
 {
@@ -14,8 +15,12 @@ namespace Enemy
         [Header("EnemyStats")]
         public float walkSpeed;
         public float activeSpeed;
+
         public float startSpinSpeed;
         public float staggerDuration;
+
+        public float slideSpeed;
+        public float slideDuration;
 
         [Header("Raycast Values")]
         public float rayLength;
@@ -154,14 +159,21 @@ namespace Enemy
             }
             else return false;
         }
-        public void PickUp(GameObject holdPos)
+        /*public void PickUp(GameObject holdPos)
         {
             this.holdPos = holdPos;
             enemyMachine.ForceActivateState<HeldState>();
+        }*/
+        public GameObject PickUp() // Returns the graphic that the player will hold
+        {
+            Destroy(gameObject);
+            return body;
         }
+
         public void Throw()
         {
             Debug.Log("Enemy thrown");
+            enemyMachine.ForceActivateState<SlidingState>();
         }
     }
 

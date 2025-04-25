@@ -22,6 +22,7 @@ public class NicknameManager : NetworkBehaviour, IPlayerLeft
     {
         gameObject.name = nickname.ToString();
         playerNicknameTM.text = nickname.ToString();
+        canvas.gameObject.transform.parent = null;
     }
 
     public override void Spawned()

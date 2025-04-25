@@ -1,4 +1,5 @@
 using Fusion.Addons.FSM;
+using NUnit.Framework;
 using UnityEngine;
 namespace Player
 {
@@ -31,7 +32,7 @@ namespace Player
         
         protected override void OnExitState()
         {
-            Debug.Log("Throw!");
+            player.ThrowObject();
         }
 
         protected override void OnEnterStateRender()

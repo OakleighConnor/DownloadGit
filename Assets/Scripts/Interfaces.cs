@@ -7,6 +7,6 @@ public interface IDamageable
 
 public interface IPickupable
 {
-    void PickUp(GameObject holdPos);
+    GameObject PickUp();
     void Throw();
 }

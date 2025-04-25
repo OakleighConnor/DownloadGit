@@ -6,6 +6,8 @@ using Fusion.Addons.FSM;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using Fusion.LagCompensation;
+using Enemy;
+using UnityEditor.Animations;
 
 namespace Player
 {
@@ -44,8 +46,11 @@ namespace Player
 
         [Header("Attack")]
         public Transform attackPos;
-        public GameObject heldObjectPos;
+        public Transform holdPos;
+
         public GameObject heldObject;
+        public GameObject heldObjectPF;
+        public GameObject heldObjectVisual;
 
         [Header("Hitboxes")]
         Hitbox[] hitboxes;
@@ -180,7 +185,6 @@ namespace Player
             }
 
             Move();
-            Debug.Log($"Action Input Pressed: {actionButtons.IsSet(actionInput)}");
         }
         bool Grounded() // Performs a raycast to check for ground layer
         {
@@ -213,17 +217,35 @@ namespace Player
             LagCompensatedHit hitInfo;
             if(Runner.LagCompensation.Raycast(attackPos.position, transform.forward, checkLength, Object.InputAuthority, out hitInfo, pickUpLayerMask, HitOptions.IncludePhysX))
             {
+                Debug.Log("Pickup layer");
                 IPickupable pickupable = hitInfo.Hitbox.GetComponentInParent<IPickupable>();
                 if(pickupable != null)
                 {
                     Debug.Log("Can pick up");
-                    pickupable.PickUp(heldObjectPos);
-                    heldObject = hitInfo.Hitbox.transform.root.gameObject;
-                    Debug.Log(heldObject);
+                    HoldObject(hitInfo.Hitbox.transform.root.gameObject, pickupable.PickUp());
                     return true;
                 }
             }
             return false;
+        }
+        void HoldObject(GameObject obj, GameObject objectVisual) // Places the visual the player will hold where they should hold it
+        {
+            heldObjectVisual = objectVisual;
+            heldObjectPF = Resources.Load(obj.tag, typeof(GameObject)) as GameObject;
+
+            heldObjectVisual.transform.SetParent(holdPos);
+            heldObjectVisual.transform.position = holdPos.position;
+        }
+
+        public void ThrowObject()
+        {
+            if (heldObjectVisual == null || heldObjectPF == null) return;
+            Destroy(heldObjectVisual);
+            heldObjectVisual = null;
+
+            Debug.Log("Throw");
+
+            if(Object.HasStateAuthority) Runner.Spawn(heldObjectPF, holdPos.position, Quaternion.LookRotation(transform.forward), Object.InputAuthority);
         }
         bool CheckForFall() => cc.Velocity.y <= 0 && !Grounded(); // Checks for downwards velocity & no ground
         bool CheckForBounce() // Performs lag compensated raycast checking for hitboxes. Must only be executed on state authority

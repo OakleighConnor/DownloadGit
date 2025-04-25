@@ -269,7 +269,7 @@ GameObject:
   - component: {fileID: 1613976371911192257}
   m_Layer: 10
   m_Name: BasicEnemy
-  m_TagString: Untagged
+  m_TagString: BasicEnemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -325,6 +325,8 @@ MonoBehaviour:
   activeSpeed: 0
   startSpinSpeed: 3
   staggerDuration: 5
+  slideSpeed: 3
+  slideDuration: 5
   rayLength: 0.8
   ground:
     serializedVersion: 2
@@ -346,7 +348,6 @@ MonoBehaviour:
   anim: {fileID: 0}
   body: {fileID: 6398347326525889078}
   _walkingState: {fileID: 0}
-  _turningState: {fileID: 0}
   _fallingState: {fileID: 0}
   _staggeredState: {fileID: 0}
   _heldState: {fileID: 0}
@@ -1112,7 +1113,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6493035777387939277}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 1014831617, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 

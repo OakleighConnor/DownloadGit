@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7179752516660185659}
   m_Layer: 7
-  m_Name: HeldObject
+  m_Name: HoldPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -463,6 +463,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   playerInputPF: {fileID: 329275106461532070, guid: 29bf0ca69f218d147a3f519ac1afcb67, type: 3}
+  basicEnemy: {fileID: 1723638094611281261, guid: 0cdb736b0dd2cc04d9ba0fcd975346ec, type: 3}
   dir: {x: 0, y: 0}
   cc: {fileID: 0}
   bounceHeight: 20
@@ -481,8 +482,8 @@ MonoBehaviour:
   rayOffsetY: -1.05
   checkLength: 0.4
   attackPos: {fileID: 7642083096871832698}
+  holdPos: {fileID: 7179752516660185659}
   heldObject: {fileID: 0}
-  heldObjectPos: {fileID: 190322320371772307}
   cameraPos: {fileID: 4378023543705727318}
   _idleState: {fileID: 245313877790003001}
   _movementState: {fileID: 3717291686793714873}

@@ -17,12 +17,17 @@ namespace Enemy
 
         protected override void OnEnterState()
         {
-            
+            Debug.Log("Sliding ...");
+
+            enemy.rb.Rigidbody.linearVelocity = enemy.transform.forward * enemy.slideSpeed;
         }
 
         protected override void OnFixedUpdate()
         {
-            
+            if (Machine.StateTime > enemy.slideDuration)
+            {
+                Debug.Log("Slide Finished");
+            }
         }
         
         protected override void OnExitState()
