@@ -9,9 +9,13 @@ namespace Player
             return base.CanEnterState();
         }
 
-        protected override bool CanExitState(PlayerStateBehaviour nextState)
+        /*protected override bool CanExitState(PlayerStateBehaviour nextState)
         {
             return player.cc.Grounded || nextState == player._jumpState;
+        }*/
+        protected override bool CanExitState(PlayerStateBehaviour nextState)
+        {
+            return base.CanExitState(nextState);
         }
 
         protected override void OnEnterState()

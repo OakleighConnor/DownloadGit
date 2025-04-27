@@ -9,15 +9,21 @@ namespace Player
             return base.CanEnterState();
         }
 
-        protected override bool CanExitState(PlayerStateBehaviour nextState)
+        /*protected override bool CanExitState(PlayerStateBehaviour nextState)
         {
             if (Machine.StateTime < 0.1f) return false;
-            return player.cc.Grounded || nextState == player._fallingState;
+            //return player.cc.Grounded || nextState == player._fallingState;
+            return base.CanExitState(sta)
+        }*/
+
+        protected override bool CanExitState(PlayerStateBehaviour nextState)
+        {
+            return base.CanExitState(nextState);
         }
 
         protected override void OnEnterState()
         {
-            if (Object.HasStateAuthority) player.cc.Velocity = new Vector3(player.cc.Velocity.x, 20, player.cc.Velocity.z);
+            //if (Object.HasStateAuthority) player.cc.Velocity = new Vector3(player.cc.Velocity.x, 20, player.cc.Velocity.z);
         }
 
         protected override void OnFixedUpdate()

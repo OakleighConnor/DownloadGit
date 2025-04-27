@@ -6,7 +6,7 @@ namespace Player
     {
         protected override bool CanEnterState()
         {
-            return player.grounded;
+            return base.CanEnterState();
         }
 
         protected override bool CanExitState(PlayerStateBehaviour nextState)
@@ -16,7 +16,7 @@ namespace Player
 
         protected override void OnEnterState()
         {
-            player.moving = false;
+            
         }
 
         protected override void OnFixedUpdate()
@@ -32,7 +32,7 @@ namespace Player
         
         protected override void OnExitState()
         {
-            player.moving = true;
+            
         }
 
         protected override void OnEnterStateRender()

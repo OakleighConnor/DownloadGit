@@ -21,11 +21,6 @@ namespace Player
 
         protected override void OnFixedUpdate()
         {
-            /*
-            playerScript.dir.Normalize();
-            cc.Move(cc.maxSpeed * playerScript.dir * 1000 * Runner.DeltaTime);
-            */
-
             //player.Move();
         }
         
