@@ -49,11 +49,6 @@ namespace Enemy
         protected override void OnRender()
         {
             enemy.anim.speed = enemy.startSpinSpeed - (enemy.startSpinSpeed * (Mathf.Round(Machine.StateTime * 100) / 100 / enemy.staggerDuration));
-
-            /*
-            float v = enemy.startSpinSpeed * (Mathf.Round(Machine.StateTime * 100) / 100 / enemy.staggerDuration);
-
-            enemy.anim.speed = enemy.startSpinSpeed - v;*/
         }
 
         protected override void OnExitStateRender()

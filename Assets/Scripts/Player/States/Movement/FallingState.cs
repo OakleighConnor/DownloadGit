@@ -20,7 +20,7 @@ namespace Player
 
         protected override void OnEnterState()
         {
-
+            
         }
 
         protected override void OnFixedUpdate()

@@ -235,7 +235,7 @@ namespace Player
         }
         bool CheckForIdle() => dir.x == 0 && kcc.IsGrounded; // Checks for no player movement input & ground
         bool CheckForMovement() => dir.x != 0 && kcc.IsGrounded; // Checks for player movement input & ground
-        //bool CheckForJump() => jumpButtons.IsSet(jumpInput); // Checks for player jump inputs & ground
+        //bool CheckForJump() => jumpButtons.IsSet(jumpInput) && kcc.IsGrounded; // Checks for player jump inputs & ground
         bool CheckForPickup() => actionButtons.IsSet(actionInput); // Checks if the player is using the action input (checks in state if a holdable object is close enough to the player)
         public bool CheckForThrow() => !actionButtons.IsSet(actionInput);
         public bool CheckForPickupTarget()
