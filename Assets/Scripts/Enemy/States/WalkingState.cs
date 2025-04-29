@@ -17,8 +17,9 @@ namespace Enemy
 
         protected override void OnEnterState()
         {
-            enemy.hr.SetHitboxActive(enemy.staggeredHitbox, false);
+            //enemy.hr.SetHitboxActive(enemy.staggeredHitbox, false);
             enemy.activeSpeed = enemy.walkSpeed;
+            Debug.Log("Walking");
         }
 
         protected override void OnFixedUpdate()

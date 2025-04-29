@@ -480,9 +480,9 @@ MonoBehaviour:
   pickUpLayerMask:
     serializedVersion: 2
     m_Bits: 4096
-  rayOffsetX: 0
+  rayOffsetX: 0.5
   rayOffsetY: -0.05
-  checkLength: 0.4
+  checkLength: 0.3
   attackPos: {fileID: 7642083096871832698}
   holdPos: {fileID: 7179752516660185659}
   heldObject: {fileID: 0}

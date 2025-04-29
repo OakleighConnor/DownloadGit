@@ -19,8 +19,6 @@ namespace Enemy
 
         protected override void OnEnterState()
         {
-            enemy.rb.Rigidbody.linearVelocity = new Vector3(0,0,0);
-
             enemy.anim.Play("Stagger");
 
             enemy.hr.SetHitboxActive(enemy.activeHitbox, false);

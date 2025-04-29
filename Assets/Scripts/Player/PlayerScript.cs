@@ -9,6 +9,7 @@ using Fusion.LagCompensation;
 using Enemy;
 using Fusion.Addons.SimpleKCC;
 using UnityEngine.TextCore;
+using UnityEngine.Video;
 
 namespace Player
 {
@@ -31,16 +32,13 @@ namespace Player
         [Networked] NetworkButtons previousButtons {get; set;}
 
         [Header("Player Movement")]
-        //public NetworkCharacterController cc;
         SimpleKCC kcc;
         public int speed;
+        int currentSpeed;
         public int jumpImpulse;
         public int bounceHeight;
         int jump;
-        
-        Vector3 lastPos;
-
-        public bool moving;
+        [HideInInspector] public bool moving = true;
 
         [Header("Animation")]
         public Animator anim;
@@ -155,6 +153,8 @@ namespace Player
             // Photon Fusion Hitboxes
             hitboxes = GetComponentsInChildren<Hitbox>();
             hr = GetComponent<HitboxRoot>();
+
+            moving = true;
         }
         public override void Spawned() // Spawns player input component + canera and assigns input variables in the Spawner script
         {
@@ -198,7 +198,6 @@ namespace Player
             }
 
             Move();
-            
 
             /*jump = 0;
 
@@ -215,13 +214,20 @@ namespace Player
             //GroundCheck();
         }
 
-        public override void Render()
+        public void RotatePlayer()
         {
             if(dir.x != 0) body.transform.rotation = Quaternion.Euler(transform.rotation.x, 90 * dir.x, transform.rotation.z);
         }
         
         public void Move()
         {
+            currentSpeed = speed;
+
+            if(!moving)
+            {
+                currentSpeed = 0;
+            }
+
             jump = 0;
 
             if(jumpButtons.WasPressed(previousButtons, jumpInput) && kcc.IsGrounded)
@@ -230,7 +236,7 @@ namespace Player
                 movementMachine.TryActivateState<JumpState>();
             }
 
-            kcc.Move(dir.normalized * speed, jump);
+            kcc.Move(dir.normalized * currentSpeed, jump);
             previousButtons = jumpButtons;
         }
         bool CheckForIdle() => dir.x == 0 && kcc.IsGrounded; // Checks for no player movement input & ground
@@ -284,15 +290,21 @@ namespace Player
         bool CheckForBounce() // Performs lag compensated raycast checking for hitboxes. Must only be executed on state authority
         {
             // Raycast values
-            Vector3 rayPos;
-            rayPos = new Vector3(transform.position.x, transform.position.y + rayOffsetY, transform.position.z);
+            Vector3 rightRayPos;
+            Vector3 middRayPos;
+            Vector3 leftRayPos;
+            rightRayPos = new Vector3(transform.position.x + rayOffsetX, transform.position.y + rayOffsetY, transform.position.z);
+            middRayPos = new Vector3(transform.position.x, transform.position.y + rayOffsetY, transform.position.z);
+            leftRayPos = new Vector3(transform.position.x - rayOffsetX, transform.position.y + rayOffsetY, transform.position.z);
 
             // Debugging
-            Debug.DrawRay(rayPos, Vector3.down * checkLength, Color.red);
+            Debug.DrawRay(rightRayPos, Vector3.down * checkLength, Color.red);
+            Debug.DrawRay(middRayPos, Vector3.down * checkLength, Color.red);
+            Debug.DrawRay(leftRayPos, Vector3.down * checkLength, Color.red);
 
             // Raycast
             LagCompensatedHit hitInfo;
-            if(Runner.LagCompensation.Raycast(rayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX))
+            if(Runner.LagCompensation.Raycast(rightRayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX) || Runner.LagCompensation.Raycast(middRayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX) || Runner.LagCompensation.Raycast(leftRayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX))
             {
                 Debug.Log("Online Hit");
                 InflictDamage(hitInfo.Hitbox.GetComponentInParent<IDamageable>());

@@ -45,6 +45,8 @@ namespace Player
             {
                 player.anim.Play("Run Right");
             }
+
+            player.RotatePlayer();
         }
 
         protected override void OnExitStateRender()

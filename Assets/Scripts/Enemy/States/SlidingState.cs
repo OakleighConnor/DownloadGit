@@ -18,8 +18,6 @@ namespace Enemy
         protected override void OnEnterState()
         {
             Debug.Log("Sliding ...");
-
-            enemy.rb.Rigidbody.linearVelocity = enemy.transform.forward * enemy.slideSpeed;
         }
 
         protected override void OnFixedUpdate()

@@ -21,12 +21,6 @@ namespace Player
 
         protected override void OnFixedUpdate()
         {
-            /*if (Machine.StateTime > 1f)
-            {
-                // Attack finished, deactivate
-                Machine.TryDeactivateState(StateId);
-            }*/
-
             //player.Move();
         }
         
@@ -44,7 +38,7 @@ namespace Player
 
         protected override void OnRender()
         {
-            
+            player.RotatePlayer();
         }
 
         protected override void OnExitStateRender()

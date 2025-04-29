@@ -42,7 +42,7 @@ namespace Player
 
         protected override void OnRender()
         {
-            
+            player.RotatePlayer();
         }
 
         protected override void OnExitStateRender()

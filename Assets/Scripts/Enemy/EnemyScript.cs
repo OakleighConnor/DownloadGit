@@ -1,8 +1,11 @@
 using Fusion;
-using Fusion.Addons.Physics;
 using UnityEngine;
 using Fusion.Addons.FSM;
 using System.Collections.Generic;
+using Fusion.Addons.SimpleKCC;
+using Fusion.LagCompensation;
+using UnityEditor;
+using JetBrains.Annotations;
 
 namespace Enemy
 {
@@ -21,12 +24,14 @@ namespace Enemy
         public float slideSpeed;
         public float slideDuration;
 
-        [Header("Raycast Values")]
-        public float rayLength;
+        [Header("Collision")]
+        public float groundRayLength;
+        public float collisionRayLength;
         public LayerMask ground;
         public LayerMask player;
         public LayerMask collideable;
         public Transform groundCheckPos, edgeCheckPos;
+        public Vector3 overlapBoxSize = new Vector3(0.4f, 0.4f, 0.4f);
 
         [Header("Hitboxes")]
         public HitboxRoot hr;
@@ -38,7 +43,7 @@ namespace Enemy
         public bool nearEdge;
 
         [Header("Components")]
-        public NetworkRigidbody3D rb;
+        SimpleKCC kcc;
         public Animator anim;
         public GameObject body;
 
@@ -53,10 +58,11 @@ namespace Enemy
         private StateMachine<EnemyStateBehaviour> enemyMachine;
         void Awake()
         {
-            rb = GetComponent<NetworkRigidbody3D>();
+            kcc = GetComponent<SimpleKCC>();
             anim = GetComponentInChildren<Animator>();
 
             hr = GetComponent<HitboxRoot>();
+            
         }
         void IStateMachineOwner.CollectStateMachines(List<IStateMachine> stateMachines) // Creates State Machine, Initializes States & Assigns State Transitions
         {
@@ -94,33 +100,67 @@ namespace Enemy
 
         public override void Spawned()
         {
+            kcc.SetGravity(Physics.gravity.y * 4.0f);
         }
         public void Move()
         {
-            if(activeSpeed == 0) return;
-            
-            rb.Rigidbody.AddForce(transform.forward * activeSpeed * 5 * 1000 * Runner.DeltaTime, ForceMode.Force);
-            rb.Rigidbody.linearVelocity = Vector3.ClampMagnitude(rb.Rigidbody.linearVelocity, activeSpeed);
+            kcc.Move(transform.forward * activeSpeed, 0);
         }
         public void Turn() // Turn the enemy around
         {
-            rb.Rigidbody.linearVelocity = new Vector3(0,0,0);
-            transform.Rotate(0,180,0);
+            Debug.Log("Turning");
+            kcc.AddLookRotation(new Vector3(0,180,0));
         }
         public bool CheckForCollision() // Checks for walls or other enemies and turns around if collision occurs
         {
-            Debug.DrawRay(groundCheckPos.position, transform.forward * rayLength, Color.green);
+            Debug.DrawRay(groundCheckPos.position, transform.forward * collisionRayLength, Color.green);
 
             RaycastHit hit;
             // Does the ray intersect any objects excluding the player layer
-            if (Physics.Raycast(groundCheckPos.position, transform.forward, out hit, rayLength, collideable))
+            if (Physics.Raycast(groundCheckPos.position, transform.forward, out hit, collisionRayLength, collideable))
             {
                 return true;
             }
             else return false;
         }
+
+        void OnDrawGizmos()
+        {
+            Gizmos.matrix = transform.localToWorldMatrix;
+            Gizmos.DrawWireCube(new Vector3(0, 0.475f, 0), overlapBoxSize);
+        }
         public void CheckForPlayerCollision() // Checks for player. If player collision then damage the player
         {
+            // Results container
+            List<LagCompensatedHit> hits = new List<LagCompensatedHit>();
+
+            int hitCount = Runner.LagCompensation.OverlapBox(
+                transform.position, // Location of overlap box
+                overlapBoxSize, // Half extents
+                transform.rotation, // Orientation
+                Object.InputAuthority,
+                hits, // Where the LagCompensated hits should be stored
+                player, // The layer mask that should be read 
+                HitOptions.IncludePhysX
+            );
+
+            // Calls Damage() for each player caught in the OverlapBox
+            for (int i = 0; i < hitCount; i++)
+            {
+                Debug.Log($"Hit {i}");
+                LagCompensatedHit hitInfo = hits[i];
+
+                Debug.Log($"Hit Object {hitInfo.GameObject.transform.root.gameObject}");
+
+                IDamageable damageable = hitInfo.GameObject.GetComponentInParent<IDamageable>();
+                if(damageable != null)
+                {
+                    Debug.Log("Player with IDamageable found! Calling Damage()");
+                    damageable.Damage();
+                }
+            }
+
+            /*
             Vector3[] directions = new Vector3[] { Vector3.left, Vector3.right };
 
             foreach(Vector3 direction in directions)
@@ -140,7 +180,7 @@ namespace Enemy
                         return;
                     }
                 }
-            }
+            }*/
         }
         public void Damage() // Triggers the StaggeredState of the enemy (IDamagable)
         {
@@ -153,11 +193,11 @@ namespace Enemy
         public bool RaycastDown(Vector3 rayPos) // Performs the Raycasts down
         {
             // Debug
-            Debug.DrawRay(rayPos, Vector3.down * rayLength, Color.green);
+            Debug.DrawRay(rayPos, Vector3.down * groundRayLength, Color.green);
 
             RaycastHit hit;
             // Does the ray intersect any objects excluding the player layer
-            if (Physics.Raycast(rayPos, Vector3.down, out hit, rayLength, ground))
+            if (Physics.Raycast(rayPos, Vector3.down, out hit, groundRayLength, ground))
             {
                 return true;
             }

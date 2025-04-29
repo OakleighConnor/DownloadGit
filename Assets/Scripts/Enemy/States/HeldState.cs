@@ -19,7 +19,6 @@ namespace Enemy
         {
             // Doesnt work
             Debug.Log("Held start");
-            enemy.rb.Rigidbody.useGravity = false;
             enemy.body.transform.SetParent(enemy.holdPos.transform);
             enemy.body.transform.position = enemy.holdPos.transform.position;
         }
