@@ -59,10 +59,8 @@ namespace Enemy
         void Awake()
         {
             kcc = GetComponent<SimpleKCC>();
-            anim = GetComponentInChildren<Animator>();
-
             hr = GetComponent<HitboxRoot>();
-            
+            anim = GetComponentInChildren<Animator>();
         }
         void IStateMachineOwner.CollectStateMachines(List<IStateMachine> stateMachines) // Creates State Machine, Initializes States & Assigns State Transitions
         {

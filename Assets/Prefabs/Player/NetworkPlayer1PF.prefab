@@ -382,7 +382,7 @@ Transform:
   m_GameObject: {fileID: 1373715838701826396}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: -0.5, z: 0.5}
+  m_LocalPosition: {x: -0, y: 1, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -482,7 +482,7 @@ MonoBehaviour:
     m_Bits: 4096
   rayOffsetX: 0.5
   rayOffsetY: -0.05
-  checkLength: 0.3
+  checkLength: 1
   attackPos: {fileID: 7642083096871832698}
   holdPos: {fileID: 7179752516660185659}
   heldObject: {fileID: 0}
@@ -494,6 +494,8 @@ MonoBehaviour:
   _jumpState: {fileID: 3821605785363837885}
   _fallingState: {fileID: 851063185789161806}
   _staggeredState: {fileID: 7148933700873980900}
+  _neutralState: {fileID: 0}
+  _holdingState: {fileID: 0}
 --- !u!114 &-8481952370257275068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -611,7 +613,7 @@ MonoBehaviour:
     ColliderLayer: 7
     CollisionLayerMask:
       serializedVersion: 2
-      m_Bits: 65
+      m_Bits: 4161
     ProxyInterpolationMode: 0
     MaxPenetrationSteps: 8
     CCDRadiusMultiplier: 0.75

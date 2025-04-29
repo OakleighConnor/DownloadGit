@@ -74,12 +74,12 @@ namespace Player
         [HideInInspector] public JumpState _jumpState;
         [HideInInspector] public FallingState _fallingState;
         [HideInInspector] public StaggeredState _staggeredState;
-        //[HideInInspector] public NeutralState _neutralState;
-        //[HideInInspector] public HoldingState _holdingState;
+        [HideInInspector] public NeutralState _neutralState;
+        [HideInInspector] public HoldingState _holdingState;
 
         [Header("StateMachines")]
         StateMachine<PlayerStateBehaviour> movementMachine;
-        //StateMachine<PlayerStateBehaviour> attackMachine;
+        StateMachine<PlayerStateBehaviour> attackMachine;
         
 
         void IStateMachineOwner.CollectStateMachines(List<IStateMachine> stateMachines) // Creates State Machine, Initializes States & Assigns State Transitions. Update when implementing new states
@@ -93,12 +93,12 @@ namespace Player
             _staggeredState = GetComponentInChildren<StaggeredState>();
 
             // Attack FSM
-      /*      _neutralState = GetComponentInChildren<NeutralState>();
-            _holdingState = GetComponentInChildren<HoldingState>();*/
+            _neutralState = GetComponentInChildren<NeutralState>();
+            _holdingState = GetComponentInChildren<HoldingState>();
             
             // Creates new state machines
             movementMachine = new StateMachine<PlayerStateBehaviour>("Movement Behaviour", _idleState, _movementState, _jumpState, _fallingState, _staggeredState);
-            //attackMachine = new StateMachine<PlayerStateBehaviour>("Attack Behaviour", _neutralState, _holdingState);
+            attackMachine = new StateMachine<PlayerStateBehaviour>("Attack Behaviour", _neutralState, _holdingState);
 
             // Assign script reference in each of the states
             _idleState.Initialize(this);
@@ -106,8 +106,8 @@ namespace Player
             _jumpState.Initialize(this);
             _fallingState.Initialize(this);
             _staggeredState.Initialize(this);
-  /*          _neutralState.Initialize(this);
-            _holdingState.Initialize(this);*/
+            _neutralState.Initialize(this);
+            _holdingState.Initialize(this);
 
             // Assign transitions between states
 
@@ -132,14 +132,14 @@ namespace Player
 
             // Attacking FSM
             // Neutral Transitions
-            //_neutralState.AddTransition(_holdingState, CheckForPickup);
+            _neutralState.AddTransition(_holdingState, CheckForPickup);
 
             // Holding Transition
 
             
             // Adds created state machines to state machines
             stateMachines.Add(movementMachine);
-            //stateMachines.Add(attackMachine);
+            stateMachines.Add(attackMachine);
             
         }
         private void Awake()
@@ -223,7 +223,7 @@ namespace Player
         {
             currentSpeed = speed;
 
-            if(!moving)
+            if(movementMachine.ActiveState == _staggeredState)
             {
                 currentSpeed = 0;
             }
@@ -244,14 +244,35 @@ namespace Player
         //bool CheckForJump() => jumpButtons.IsSet(jumpInput) && kcc.IsGrounded; // Checks for player jump inputs & ground
         bool CheckForPickup() => actionButtons.IsSet(actionInput); // Checks if the player is using the action input (checks in state if a holdable object is close enough to the player)
         public bool CheckForThrow() => !actionButtons.IsSet(actionInput);
+
         public bool CheckForPickupTarget()
         {
-            // Debugging
-            Debug.DrawRay(attackPos.position, Vector3.right * dir.x * checkLength, Color.red);
+            Debug.DrawRay(attackPos.position, body.transform.forward * checkLength, Color.red);
 
             // Raycast
             LagCompensatedHit hitInfo;
-            if(Runner.LagCompensation.Raycast(attackPos.position, Vector3.right, checkLength * dir.x, Object.InputAuthority, out hitInfo, pickUpLayerMask, HitOptions.IncludePhysX))
+            if (Runner.LagCompensation.Raycast(attackPos.position, body.transform.forward, checkLength, Object.InputAuthority, out hitInfo, pickUpLayerMask, HitOptions.IncludePhysX))
+            {
+                Debug.Log("Collided");
+                InflictDamage(hitInfo.Hitbox.GetComponentInParent<IDamageable>());
+                jump = jumpImpulse;
+                kcc.Move(dir.normalized * speed, jump);
+                movementMachine.TryActivateState<JumpState>();
+                return true;
+            }
+            return false;
+        }
+
+        /*public bool CheckForPickupTarget()
+        {
+            Debug.Log("Checking for pick upable");
+
+            // Debugging
+            Debug.DrawRay(attackPos.position, body.transform.forward * checkLength, Color.red);
+
+            // Raycast
+            LagCompensatedHit hitInfo;
+            if(Runner.LagCompensation.Raycast(attackPos.position, body.transform.forward, checkLength, Object.InputAuthority, out hitInfo, pickUpLayerMask, HitOptions.IncludePhysX))
             {
                 Debug.Log("Pickup layer");
                 IPickupable pickupable = hitInfo.Hitbox.GetComponentInParent<IPickupable>();
@@ -263,7 +284,7 @@ namespace Player
                 }
             }
             return false;
-        }
+        }*/
         void HoldObject(GameObject obj, GameObject objectVisual) // Places the visual the player will hold where they should hold it
         {
             if (heldObjectVisual != null) return;
