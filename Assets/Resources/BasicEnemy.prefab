@@ -322,11 +322,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdPos: {fileID: 0}
   walkSpeed: 2
+  slideSpeed: 3
   activeSpeed: 0
+  activeSlideSpeed: 0
   startSpinSpeed: 3
   staggerDuration: 5
-  slideSpeed: 3
-  slideDuration: 5
+  slideDuration: 10
   groundRayLength: 1
   collisionRayLength: 0.25
   ground:

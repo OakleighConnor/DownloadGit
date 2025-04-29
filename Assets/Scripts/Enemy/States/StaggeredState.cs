@@ -2,6 +2,7 @@ using UnityEngine;
 using Fusion;
 using Fusion.Addons.FSM;
 using Unity.VisualScripting.FullSerializer;
+using System;
 
 namespace Enemy
 {
@@ -19,8 +20,6 @@ namespace Enemy
 
         protected override void OnEnterState()
         {
-            enemy.anim.Play("Stagger");
-
             enemy.hr.SetHitboxActive(enemy.activeHitbox, false);
             enemy.hr.SetHitboxActive(enemy.staggeredHitbox, true);
         }
@@ -41,12 +40,13 @@ namespace Enemy
 
         protected override void OnEnterStateRender()
         {
+            enemy.anim.Play("Stagger");
             enemy.anim.speed = enemy.startSpinSpeed;
         }
 
         protected override void OnRender()
         {
-            enemy.anim.speed = enemy.startSpinSpeed - (enemy.startSpinSpeed * (Mathf.Round(Machine.StateTime * 100) / 100 / enemy.staggerDuration));
+            enemy.DecreaseAnimationSpeed(Mathf.Round(Machine.StateTime * 100) / 100, enemy.staggerDuration);
         }
 
         protected override void OnExitStateRender()

@@ -6,22 +6,24 @@ using Fusion.Addons.SimpleKCC;
 using Fusion.LagCompensation;
 using UnityEditor;
 using JetBrains.Annotations;
+using Unity.VisualScripting;
 
 namespace Enemy
 {
     [RequireComponent(typeof(StateMachineController))]
-    public class EnemyScript : NetworkBehaviour, IDamageable, IPickupable, IStateMachineOwner
+    public class EnemyScript : NetworkBehaviour, IDamageable, IThrowable, IStateMachineOwner
     {
         public GameObject holdPos;
 
         [Header("EnemyStats")]
-        public float walkSpeed;
-        public float activeSpeed;
+        public int walkSpeed;
+        public int slideSpeed;
+        public int activeSpeed;
+        public float activeSlideSpeed;
 
         public float startSpinSpeed;
         public float staggerDuration;
 
-        public float slideSpeed;
         public float slideDuration;
 
         [Header("Collision")]
@@ -56,7 +58,7 @@ namespace Enemy
 
         [Header("StateMachines")]
         private StateMachine<EnemyStateBehaviour> enemyMachine;
-        void Awake()
+        void Awake() // Assigns references to components
         {
             kcc = GetComponent<SimpleKCC>();
             hr = GetComponent<HitboxRoot>();
@@ -91,25 +93,58 @@ namespace Enemy
             // Adds created state machines to state machines
             stateMachines.Add(enemyMachine);
         }
+        public override void Spawned()
+        {
+            hr.InitHitboxes();
+
+            hr.SetHitboxActive(activeHitbox, true);
+            hr.SetHitboxActive(staggeredHitbox, false);
+
+            kcc.SetGravity(Physics.gravity.y * 4.0f);
+        }
+        public void Update()
+        {
+            if (enemyMachine == null) return;
+            Debug.Log($"Enemy State: {enemyMachine.ActiveState}");
+        }
+        private void OnGUI()
+        {
+            if (GUI.Button(new Rect(10, 10, 150, 100), "Debug hitbox values"))
+            {
+                Debug.Log($"Hitbox States: Active Hitbox: {hr.IsHitboxActive(activeHitbox)} Staggered Hitbox: {hr.IsHitboxActive(staggeredHitbox)}");
+            }
+        }
         public override void FixedUpdateNetwork() 
         {
             Move();
         }
-
-        public override void Spawned()
-        {
-            kcc.SetGravity(Physics.gravity.y * 4.0f);
-        }
-        public void Move()
+        public void Move() // Moves the enemy using the KCC 
         {
             kcc.Move(transform.forward * activeSpeed, 0);
         }
-        public void Turn() // Turn the enemy around
+        public void Slide(float stateTime) // Gradually decreases the speed of the enemy sliding over time. Applies movement to KCC 
+        {
+            activeSlideSpeed = DecreaseValueOverTime(slideSpeed, stateTime, slideDuration);
+            kcc.Move(transform.forward * activeSlideSpeed * 6, 0);
+        }
+        public void DecreaseAnimationSpeed(float stateTime, float animationDuration) // Decreases animation speed over time 
+        {
+            anim.speed = DecreaseValueOverTime(startSpinSpeed, stateTime, animationDuration);
+        }
+        float DecreaseValueOverTime(float startingValue, float timePassed, float duration) // Used by sliding and staggered state. Gradually decreases value over time for the duration input 
+        {
+            float value;
+
+            value = startingValue - (startingValue * timePassed / duration);
+
+            return value;
+        }
+        public void Turn() // Turn the enemy around. Currently snaps to a 180 turn 
         {
             Debug.Log("Turning");
             kcc.AddLookRotation(new Vector3(0,180,0));
         }
-        public bool CheckForCollision() // Checks for walls or other enemies and turns around if collision occurs
+        public bool CheckForCollision() // Checks for walls or other enemies and turns around if collision occurs 
         {
             Debug.DrawRay(groundCheckPos.position, transform.forward * collisionRayLength, Color.green);
 
@@ -121,8 +156,7 @@ namespace Enemy
             }
             else return false;
         }
-
-        void OnDrawGizmos()
+        void OnDrawGizmos() // Draws the OverlapBox for debugging purposes
         {
             Gizmos.matrix = transform.localToWorldMatrix;
             Gizmos.DrawWireCube(new Vector3(0, 0.475f, 0), overlapBoxSize);
@@ -157,28 +191,6 @@ namespace Enemy
                     damageable.Damage();
                 }
             }
-
-            /*
-            Vector3[] directions = new Vector3[] { Vector3.left, Vector3.right };
-
-            foreach(Vector3 direction in directions)
-            {
-                Debug.DrawRay(groundCheckPos.position, direction * rayLength, Color.blue);
-
-                LagCompensatedHit hitInfo;
-
-                if(Runner.LagCompensation.Raycast(groundCheckPos.position, direction, rayLength * 2, Object.InputAuthority, out hitInfo, player, HitOptions.IncludePhysX | HitOptions.IgnoreInputAuthority))
-                {
-                    IDamageable damageable = hitInfo.GameObject.GetComponentInParent<IDamageable>();
-
-                    // If enemy collides with a player then damage the player
-                    if (damageable != null)
-                    {
-                        damageable.Damage();
-                        return;
-                    }
-                }
-            }*/
         }
         public void Damage() // Triggers the StaggeredState of the enemy (IDamagable)
         {

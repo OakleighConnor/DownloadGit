@@ -5,7 +5,7 @@ public interface IDamageable
     void Damage();
 }
 
-public interface IPickupable
+public interface IThrowable
 {
     GameObject PickUp();
     void Throw();

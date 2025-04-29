@@ -45,7 +45,7 @@ namespace Player
 
         protected override void OnRender()
         {
-            player.RotatePlayer();
+            player.UpdatePlayerDirection();
         }
 
         protected override void OnExitStateRender()

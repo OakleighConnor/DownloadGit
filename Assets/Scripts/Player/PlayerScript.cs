@@ -29,6 +29,7 @@ namespace Player
         public NetworkButtons jumpButtons;
         public NetworkButtons actionButtons;
         public Vector2 dir;
+        int faceDir;
         [Networked] NetworkButtons previousButtons {get; set;}
 
         [Header("Player Movement")]
@@ -84,7 +85,6 @@ namespace Player
 
         void IStateMachineOwner.CollectStateMachines(List<IStateMachine> stateMachines) // Creates State Machine, Initializes States & Assigns State Transitions. Update when implementing new states
         {
-            
             // Movement FSM
             _idleState = GetComponentInChildren<IdleState>();
             _movementState = GetComponentInChildren<MovementState>();
@@ -158,6 +158,7 @@ namespace Player
         }
         public override void Spawned() // Spawns player input component + canera and assigns input variables in the Spawner script
         {
+            transform.rotation = Quaternion.Euler(transform.rotation.x, 90, transform.rotation.z);
             kcc.SetGravity(Physics.gravity.y * 7.5f);
 
             if(HasInputAuthority)
@@ -214,11 +215,23 @@ namespace Player
             //GroundCheck();
         }
 
-        public void RotatePlayer()
+        public override void Render()
         {
-            if(dir.x != 0) body.transform.rotation = Quaternion.Euler(transform.rotation.x, 90 * dir.x, transform.rotation.z);
+            RotatePlayer();
         }
-        
+
+        void RotatePlayer() // Rotates the player to face the last input direction
+        {
+            transform.rotation = Quaternion.Euler(transform.rotation.x, 90 * faceDir, transform.rotation.z);
+        }
+
+        public void UpdatePlayerDirection() // Updates the direction the player should face
+        {
+            if(dir.x != 0) // Only updates direction if direction is being input
+            {
+                faceDir = (int)dir.x;
+            }
+        }
         public void Move()
         {
             currentSpeed = speed;
@@ -244,8 +257,7 @@ namespace Player
         //bool CheckForJump() => jumpButtons.IsSet(jumpInput) && kcc.IsGrounded; // Checks for player jump inputs & ground
         bool CheckForPickup() => actionButtons.IsSet(actionInput); // Checks if the player is using the action input (checks in state if a holdable object is close enough to the player)
         public bool CheckForThrow() => !actionButtons.IsSet(actionInput);
-
-        public bool CheckForPickupTarget()
+        public bool CheckForPickupTarget() // Perform raycast checking if theres an object that can be picked up
         {
             Debug.DrawRay(attackPos.position, body.transform.forward * checkLength, Color.red);
 
@@ -253,30 +265,9 @@ namespace Player
             LagCompensatedHit hitInfo;
             if (Runner.LagCompensation.Raycast(attackPos.position, body.transform.forward, checkLength, Object.InputAuthority, out hitInfo, pickUpLayerMask, HitOptions.IncludePhysX))
             {
-                Debug.Log("Collided");
-                InflictDamage(hitInfo.Hitbox.GetComponentInParent<IDamageable>());
-                jump = jumpImpulse;
-                kcc.Move(dir.normalized * speed, jump);
-                movementMachine.TryActivateState<JumpState>();
-                return true;
-            }
-            return false;
-        }
-
-        /*public bool CheckForPickupTarget()
-        {
-            Debug.Log("Checking for pick upable");
-
-            // Debugging
-            Debug.DrawRay(attackPos.position, body.transform.forward * checkLength, Color.red);
-
-            // Raycast
-            LagCompensatedHit hitInfo;
-            if(Runner.LagCompensation.Raycast(attackPos.position, body.transform.forward, checkLength, Object.InputAuthority, out hitInfo, pickUpLayerMask, HitOptions.IncludePhysX))
-            {
                 Debug.Log("Pickup layer");
-                IPickupable pickupable = hitInfo.Hitbox.GetComponentInParent<IPickupable>();
-                if(pickupable != null)
+                IThrowable pickupable = hitInfo.Hitbox.GetComponentInParent<IThrowable>();
+                if (pickupable != null)
                 {
                     Debug.Log("Can pick up");
                     HoldObject(hitInfo.Hitbox.transform.root.gameObject, pickupable.PickUp());
@@ -284,7 +275,7 @@ namespace Player
                 }
             }
             return false;
-        }*/
+        }
         void HoldObject(GameObject obj, GameObject objectVisual) // Places the visual the player will hold where they should hold it
         {
             if (heldObjectVisual != null) return;
@@ -304,7 +295,12 @@ namespace Player
 
             heldObjectVisual = null;
 
-            if(Object.HasStateAuthority) Runner.Spawn(heldObjectPF, holdPos.position, Quaternion.LookRotation(transform.forward), Object.InputAuthority);
+            if (Object.HasStateAuthority)
+            {
+                IThrowable throwable = Runner.Spawn(heldObjectPF, holdPos.position, Quaternion.Euler(transform.rotation.x, 90 * faceDir, transform.rotation.z), Object.InputAuthority).GetComponentInParent<IThrowable>();
+                Debug.Log($"Throwable : {throwable}");
+                throwable.Throw();
+            }
         }
         //bool CheckForFall() => kcc.Velocity.y <= -0.1f; // Checks for downwards velocity & no ground
         bool CheckForFall() => kcc.RealVelocity.y <= -0.1f;
