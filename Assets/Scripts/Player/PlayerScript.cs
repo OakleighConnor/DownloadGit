@@ -38,7 +38,7 @@ namespace Player
         int currentSpeed;
         public int jumpImpulse;
         public int bounceHeight;
-        int jump;
+        public int jump;
         [HideInInspector] public bool moving = true;
 
         [Header("Animation")]
@@ -245,7 +245,6 @@ namespace Player
 
             if(jumpButtons.WasPressed(previousButtons, jumpInput) && kcc.IsGrounded)
             {
-                jump = jumpImpulse;
                 movementMachine.TryActivateState<JumpState>();
             }
 

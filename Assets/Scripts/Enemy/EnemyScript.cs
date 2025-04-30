@@ -120,12 +120,12 @@ namespace Enemy
         }
         public void Move() // Moves the enemy using the KCC 
         {
-            kcc.Move(transform.forward * activeSpeed, 0);
+            kcc.Move(transform.forward * activeSpeed * 100 * Runner.DeltaTime, 0);
         }
         public void Slide(float stateTime) // Gradually decreases the speed of the enemy sliding over time. Applies movement to KCC 
         {
             activeSlideSpeed = DecreaseValueOverTime(slideSpeed, stateTime, slideDuration);
-            kcc.Move(transform.forward * activeSlideSpeed * 6, 0);
+            kcc.Move(transform.forward * activeSlideSpeed * 100 * Runner.DeltaTime, 0);
         }
         public void DecreaseAnimationSpeed(float stateTime, float animationDuration) // Decreases animation speed over time 
         {
