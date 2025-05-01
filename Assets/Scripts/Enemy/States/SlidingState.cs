@@ -18,13 +18,17 @@ namespace Enemy
         protected override void OnEnterState()
         {
             enemy.activeSpeed = enemy.slideSpeed;
+            enemy.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
 
             enemy.hr.SetHitboxActive(enemy.activeHitbox, true);
             enemy.hr.SetHitboxActive(enemy.staggeredHitbox, false);
+            enemy.SetGravity(enemy.slideGravity);
         }
 
         protected override void OnFixedUpdate()
         {
+            enemy.AllignZPos();
+            
             if (Machine.StateTime > enemy.slideDuration) Machine.TryDeactivateState(StateId); // Deactivate if slide ended
             if (Machine.StateTime > 0.5) enemy.CheckForPlayerCollision(); // Delay checking to damage players to ensure player who threw enemy doesn't take damage
 
@@ -35,6 +39,7 @@ namespace Enemy
         
         protected override void OnExitState()
         {
+            enemy.SetGravity(enemy.defaultGravity);
         }
 
         protected override void OnEnterStateRender()

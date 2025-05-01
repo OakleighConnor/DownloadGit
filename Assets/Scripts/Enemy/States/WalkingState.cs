@@ -24,6 +24,7 @@ namespace Enemy
 
         protected override void OnFixedUpdate()
         {
+            enemy.AllignZPos();
             enemy.CheckForPlayerCollision();
 
             if(enemy.CheckForEdge() || enemy.CheckForCollision())

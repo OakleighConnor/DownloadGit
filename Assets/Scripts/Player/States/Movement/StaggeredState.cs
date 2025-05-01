@@ -6,7 +6,7 @@ namespace Player
     {
         protected override bool CanEnterState()
         {
-            return base.CanEnterState();
+            return Machine.ActiveState != player._staggeredState;
         }
 
         protected override bool CanExitState(PlayerStateBehaviour nextState)

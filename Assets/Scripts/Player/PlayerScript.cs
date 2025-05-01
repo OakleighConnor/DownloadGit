@@ -128,11 +128,11 @@ namespace Player
             // Fall Transitions
             _fallingState.AddTransition(_idleState, CheckForIdle);
             _fallingState.AddTransition(_movementState, CheckForMovement);
-            _fallingState.AddTransition(_jumpState, CheckForBounce);
+            if(HasStateAuthority) _fallingState.AddTransition(_jumpState, CheckForBounce);
 
             // Attacking FSM
             // Neutral Transitions
-            _neutralState.AddTransition(_holdingState, CheckForPickup);
+            if(HasStateAuthority) _neutralState.AddTransition(_holdingState, CheckForPickup);
 
             // Holding Transition
 
@@ -243,7 +243,7 @@ namespace Player
 
             jump = 0;
 
-            if(jumpButtons.WasPressed(previousButtons, jumpInput) && kcc.IsGrounded)
+            if(jumpButtons.WasPressed(previousButtons, jumpInput) && kcc.IsGrounded && movementMachine.ActiveState != _staggeredState)
             {
                 movementMachine.TryActivateState<JumpState>();
             }
@@ -296,7 +296,10 @@ namespace Player
 
             if (Object.HasStateAuthority)
             {
-                IThrowable throwable = Runner.Spawn(heldObjectPF, holdPos.position, Quaternion.Euler(transform.rotation.x, 90 * faceDir, transform.rotation.z), Object.InputAuthority).GetComponentInParent<IThrowable>();
+                Vector3 throwPos = new Vector3(holdPos.position.x, holdPos.position.y, 0);
+                Quaternion rotation = Quaternion.Euler(transform.rotation.x, 90 * faceDir, transform.rotation.z);
+
+                IThrowable throwable = Runner.Spawn(heldObjectPF, throwPos, rotation, Object.InputAuthority).GetComponentInParent<IThrowable>();
                 Debug.Log($"Throwable : {throwable}");
                 throwable.Throw();
             }
@@ -320,7 +323,7 @@ namespace Player
 
             // Raycast
             LagCompensatedHit hitInfo;
-            if(Runner.LagCompensation.Raycast(rightRayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX) || Runner.LagCompensation.Raycast(middRayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX) || Runner.LagCompensation.Raycast(leftRayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX))
+            if(Runner.LagCompensation.Raycast(rightRayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX | HitOptions.SubtickAccuracy) || Runner.LagCompensation.Raycast(middRayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX | HitOptions.SubtickAccuracy) || Runner.LagCompensation.Raycast(leftRayPos, Vector3.down, checkLength, Object.InputAuthority, out hitInfo, headLayer, HitOptions.IncludePhysX | HitOptions.SubtickAccuracy))
             {
                 Debug.Log("Online Hit");
                 InflictDamage(hitInfo.Hitbox.GetComponentInParent<IDamageable>());

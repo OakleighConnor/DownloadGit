@@ -35,6 +35,10 @@ namespace Enemy
         public Transform groundCheckPos, edgeCheckPos;
         public Vector3 overlapBoxSize = new Vector3(0.4f, 0.4f, 0.4f);
 
+        [Header("Gravity")]
+        public float defaultGravity;
+        public float slideGravity;
+
         [Header("Hitboxes")]
         public HitboxRoot hr;
         public Hitbox activeHitbox;
@@ -106,6 +110,14 @@ namespace Enemy
         {
             if (enemyMachine == null) return;
             Debug.Log($"Enemy State: {enemyMachine.ActiveState}");
+        }
+        public void SetGravity(float gravity)
+        {
+            kcc.SetGravity(Physics.gravity.y * gravity);
+        }
+        public void AllignZPos() // Sets z pos to 0 to ensure enemy doesn't break
+        {
+            kcc.SetPosition(new Vector3(transform.position.x, transform.position.y, 0));
         }
         private void OnGUI()
         {

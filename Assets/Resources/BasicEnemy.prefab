@@ -322,7 +322,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdPos: {fileID: 0}
   walkSpeed: 2
-  slideSpeed: 3
+  slideSpeed: 10
   activeSpeed: 0
   activeSlideSpeed: 0
   startSpinSpeed: 3
@@ -342,6 +342,8 @@ MonoBehaviour:
   groundCheckPos: {fileID: 5467441541008939005}
   edgeCheckPos: {fileID: 7433347276605963288}
   overlapBoxSize: {x: 0.45, y: 0.45, z: 0.45}
+  defaultGravity: 4
+  slideGravity: 1
   hr: {fileID: 0}
   activeHitbox: {fileID: 4334562796201470589}
   staggeredHitbox: {fileID: 2127668986803381243}
