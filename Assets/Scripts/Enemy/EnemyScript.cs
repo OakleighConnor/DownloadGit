@@ -132,10 +132,7 @@ namespace Enemy
         }
         public void Move() // Moves the enemy using the KCC 
         {
-            if(Object.HasStateAuthority)
-            {
-                kcc.Move(transform.forward * activeSpeed * 100 * Runner.DeltaTime, 0);
-            }
+            kcc.Move(transform.forward * activeSpeed * 100 * Runner.DeltaTime, 0);
         }
         public void Slide(float stateTime) // Gradually decreases the speed of the enemy sliding over time. Applies movement to KCC 
         {

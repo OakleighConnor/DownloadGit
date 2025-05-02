@@ -254,6 +254,7 @@ namespace Player
             }
 
             kcc.Move(dir.normalized * currentSpeed, jump);
+
             previousButtons = jumpButtons;
         }
         bool CheckForIdle() => dir.x == 0 && kcc.IsGrounded; // Checks for no player movement input & ground
