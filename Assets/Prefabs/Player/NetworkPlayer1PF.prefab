@@ -398,6 +398,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6099277770696977733}
   - component: {fileID: 4133405333465218548}
+  - component: {fileID: -4409367875689759911}
   - component: {fileID: -8481952370257275068}
   - component: {fileID: 4386764419273440972}
   - component: {fileID: 5841066994024309241}
@@ -467,6 +468,7 @@ MonoBehaviour:
   speed: 15
   jumpImpulse: 30
   bounceHeight: 15
+  jump: 0
   moving: 0
   anim: {fileID: 0}
   body: {fileID: 5002107817393040950}
@@ -480,6 +482,9 @@ MonoBehaviour:
   pickUpLayerMask:
     serializedVersion: 2
     m_Bits: 4096
+  hitboxCollisionLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   rayOffsetX: 0.5
   rayOffsetY: -0.05
   checkLength: 1
@@ -496,6 +501,30 @@ MonoBehaviour:
   _staggeredState: {fileID: 7148933700873980900}
   _neutralState: {fileID: 0}
   _holdingState: {fileID: 0}
+--- !u!114 &-4409367875689759911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2484124613595289609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae6980d5f40ce9d469ec27db13e19ea8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collisions: 1
+  collideableLayers:
+    serializedVersion: 2
+    m_Bits: 8704
+  damageLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  collectableLayer:
+    serializedVersion: 2
+    m_Bits: 8192
+  hitboxSize: {x: 1, y: 2, z: 1}
+  hitboxOffset: {x: 0, y: 1, z: 0}
 --- !u!114 &-8481952370257275068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -533,6 +562,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 4133405333465218548}
+  - {fileID: -4409367875689759911}
   - {fileID: -8481952370257275068}
   - {fileID: 5841066994024309241}
   - {fileID: 5341029582330583186}

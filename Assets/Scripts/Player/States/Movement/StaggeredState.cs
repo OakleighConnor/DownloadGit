@@ -18,6 +18,7 @@ namespace Player
         {
             player.ToggleHitboxes(false);
             player.moving = false;
+            player.cm.collisions = false;
         }
 
         protected override void OnFixedUpdate()
@@ -33,6 +34,7 @@ namespace Player
         {
             player.ToggleHitboxes(true);
             player.moving = true;
+            player.cm.collisions = true;
         }
 
         protected override void OnEnterStateRender()

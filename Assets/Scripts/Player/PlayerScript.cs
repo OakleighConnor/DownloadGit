@@ -50,6 +50,7 @@ namespace Player
         public LayerMask ground;
         public LayerMask headLayer;
         public LayerMask pickUpLayerMask;
+        public LayerMask hitboxCollisionLayerMask;
         public float rayOffsetX; // = 0f;
         public float rayOffsetY; // = -1.05f;
         public float checkLength; // = 0.4f;
@@ -65,6 +66,7 @@ namespace Player
         [Header("Hitboxes")]
         Hitbox[] hitboxes;
         HitboxRoot hr;
+        public CollisionManager cm;
 
         [Header("Camera")]
         public Transform cameraPos;
@@ -153,6 +155,9 @@ namespace Player
             // Photon Fusion Hitboxes
             hitboxes = GetComponentsInChildren<Hitbox>();
             hr = GetComponent<HitboxRoot>();
+
+            // CollisionManager
+            cm = GetComponent<CollisionManager>();
 
             moving = true;
         }

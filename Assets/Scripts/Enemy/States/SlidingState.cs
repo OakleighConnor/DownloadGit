@@ -20,7 +20,6 @@ namespace Enemy
             enemy.activeSpeed = enemy.slideSpeed;
             enemy.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
 
-            enemy.hr.SetHitboxActive(enemy.activeHitbox, true);
             enemy.hr.SetHitboxActive(enemy.staggeredHitbox, false);
             enemy.SetGravity(enemy.slideGravity);
         }
@@ -30,7 +29,7 @@ namespace Enemy
             enemy.AllignZPos();
             
             if (Machine.StateTime > enemy.slideDuration) Machine.TryDeactivateState(StateId); // Deactivate if slide ended
-            if (Machine.StateTime > 0.5) enemy.CheckForPlayerCollision(); // Delay checking to damage players to ensure player who threw enemy doesn't take damage
+            if (Machine.StateTime > 0.5) enemy.hr.SetHitboxActive(enemy.activeHitbox, true); // Delay enabling hitbox to damage players to ensure that the player throwing the enemy doesn't take damage while throwing them
 
             enemy.Slide(Machine.StateTime); // Perfom the slide
 

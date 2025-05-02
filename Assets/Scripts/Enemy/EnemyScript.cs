@@ -179,7 +179,7 @@ namespace Enemy
             Gizmos.matrix = transform.localToWorldMatrix;
             Gizmos.DrawWireCube(new Vector3(0, 0.475f, 0), overlapBoxSize);
         }
-        public void CheckForPlayerCollision() // Checks for player. If player collision then damage the player
+        /*public void CheckForPlayerCollision() // Checks for player. If player collision then damage the player
         {
             // Results container
             List<LagCompensatedHit> hits = new List<LagCompensatedHit>();
@@ -209,7 +209,7 @@ namespace Enemy
                     damageable.Damage();
                 }
             }
-        }
+        }*/
         public void Damage() // Triggers the StaggeredState of the enemy (IDamagable)
         {
             Debug.Log("DAMAGED ENEMY");
