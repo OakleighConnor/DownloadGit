@@ -128,11 +128,11 @@ namespace Player
             // Fall Transitions
             _fallingState.AddTransition(_idleState, CheckForIdle);
             _fallingState.AddTransition(_movementState, CheckForMovement);
-            if(HasStateAuthority) _fallingState.AddTransition(_jumpState, CheckForBounce);
+            if(Object.HasStateAuthority) _fallingState.AddTransition(_jumpState, CheckForBounce);
 
             // Attacking FSM
             // Neutral Transitions
-            if(HasStateAuthority) _neutralState.AddTransition(_holdingState, CheckForPickup);
+            if(Object.HasStateAuthority) _neutralState.AddTransition(_holdingState, CheckForPickup);
 
             // Holding Transition
 
@@ -254,8 +254,8 @@ namespace Player
         bool CheckForIdle() => dir.x == 0 && kcc.IsGrounded; // Checks for no player movement input & ground
         bool CheckForMovement() => dir.x != 0 && kcc.IsGrounded; // Checks for player movement input & ground
         //bool CheckForJump() => jumpButtons.IsSet(jumpInput) && kcc.IsGrounded; // Checks for player jump inputs & ground
-        bool CheckForPickup() => actionButtons.IsSet(actionInput); // Checks if the player is using the action input (checks in state if a holdable object is close enough to the player)
-        public bool CheckForThrow() => !actionButtons.IsSet(actionInput);
+        bool CheckForPickup() => actionButtons.IsSet(actionInput) && Object.HasStateAuthority; // Checks if the player is using the action input (checks in state if a holdable object is close enough to the player)
+        public bool CheckForThrow() => !actionButtons.IsSet(actionInput) && Object.HasStateAuthority;
         public bool CheckForPickupTarget() // Perform raycast checking if theres an object that can be picked up
         {
             Debug.DrawRay(attackPos.position, body.transform.forward * checkLength, Color.red);

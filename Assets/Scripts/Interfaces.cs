@@ -10,3 +10,7 @@ public interface IThrowable
     GameObject PickUp();
     void Throw();
 }
+public interface ICollectable
+{
+    void Collect();
+}

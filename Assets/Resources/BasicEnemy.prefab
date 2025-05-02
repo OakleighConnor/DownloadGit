@@ -321,7 +321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holdPos: {fileID: 0}
-  walkSpeed: 2
+  walkSpeed: 3
   slideSpeed: 10
   activeSpeed: 0
   activeSlideSpeed: 0
@@ -452,7 +452,7 @@ MonoBehaviour:
     CollisionLayerMask:
       serializedVersion: 2
       m_Bits: 65
-    ProxyInterpolationMode: 0
+    ProxyInterpolationMode: 1
     MaxPenetrationSteps: 8
     CCDRadiusMultiplier: 0.75
     AntiJitterDistance: {x: 0.025, y: 0.01}
@@ -1143,7 +1143,7 @@ MonoBehaviour:
   CapsuleExtents: 0
   Offset: {x: 0, y: 0.85, z: 0}
   Root: {fileID: 1613976371911192257}
-  GizmosColor: {r: 0.07613281, g: 1, b: 0.015686274, a: 1}
+  GizmosColor: {r: 1, g: 0.42810443, b: 0.015686274, a: 1}
 --- !u!1 &6508030871237528893
 GameObject:
   m_ObjectHideFlags: 0
