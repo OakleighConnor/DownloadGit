@@ -5,11 +5,12 @@ TagManager:
   serializedVersion: 3
   tags:
   - BasicEnemy
+  - DiskSpawnLocation
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - DebugLayer
   - Water
   - UI
   - Ground

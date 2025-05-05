@@ -21,7 +21,7 @@ public class GameManager : NetworkBehaviour
 
         //networkRunnerScript = FindAnyObjectByType<Spawner>();
 
-        if(!networkRunnerScript)
+        if(networkRunnerScript)
         {
             Debug.LogError("No NetworkRunner object has been found");
             return;

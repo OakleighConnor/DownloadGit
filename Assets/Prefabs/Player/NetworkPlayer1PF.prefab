@@ -399,6 +399,7 @@ GameObject:
   - component: {fileID: 6099277770696977733}
   - component: {fileID: 4133405333465218548}
   - component: {fileID: -4409367875689759911}
+  - component: {fileID: 8272209817871483866}
   - component: {fileID: -8481952370257275068}
   - component: {fileID: 4386764419273440972}
   - component: {fileID: 5841066994024309241}
@@ -493,6 +494,7 @@ MonoBehaviour:
   heldObject: {fileID: 0}
   heldObjectPF: {fileID: 0}
   heldObjectVisual: {fileID: 0}
+  cm: {fileID: 0}
   cameraPos: {fileID: 4378023543705727318}
   _idleState: {fileID: 245313877790003001}
   _movementState: {fileID: 3717291686793714873}
@@ -525,6 +527,20 @@ MonoBehaviour:
     m_Bits: 8192
   hitboxSize: {x: 1, y: 2, z: 1}
   hitboxOffset: {x: 0, y: 1, z: 0}
+--- !u!114 &8272209817871483866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2484124613595289609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2119bbec4ddb62e40af94a8b296d1e10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scoreText: {fileID: 0}
+  _score: 0
 --- !u!114 &-8481952370257275068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -563,6 +579,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 4133405333465218548}
   - {fileID: -4409367875689759911}
+  - {fileID: 8272209817871483866}
   - {fileID: -8481952370257275068}
   - {fileID: 5841066994024309241}
   - {fileID: 5341029582330583186}

@@ -12,5 +12,5 @@ public interface IThrowable
 }
 public interface ICollectable
 {
-    void Collect();
+    void Collect(PlayerScoreManager psm);
 }

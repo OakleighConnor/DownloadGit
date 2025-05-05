@@ -92,6 +92,7 @@ public class CollisionManager : NetworkBehaviour
             return;
         }
 
-        collectable.Collect();
+        collectable.Collect(GetComponent<PlayerScoreManager>());
+        Runner.Despawn(hit.GameObject.GetComponent<NetworkObject>());
     }
 }

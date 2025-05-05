@@ -6,7 +6,6 @@ using TMPro;
 using JetBrains.Annotations;
 public class NicknameManager : NetworkBehaviour, IPlayerLeft
 {
-    private ChangeDetector changeDetector;
     public static NicknameManager local { get; set; }
 
     [Networked, OnChangedRender (nameof(OnNickNameChanged))] 
