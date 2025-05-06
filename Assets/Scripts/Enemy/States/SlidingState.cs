@@ -21,6 +21,7 @@ namespace Enemy
             enemy.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
 
             enemy.hr.SetHitboxActive(enemy.staggeredHitbox, false);
+            enemy.hr.SetHitboxActive(enemy.activeHitbox, false);
             enemy.SetGravity(enemy.slideGravity);
         }
 

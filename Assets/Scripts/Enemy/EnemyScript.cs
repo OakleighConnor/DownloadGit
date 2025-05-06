@@ -139,7 +139,7 @@ namespace Enemy
             if(Object.HasStateAuthority)
             {
                 activeSlideSpeed = DecreaseValueOverTime(slideSpeed, stateTime, slideDuration);
-                kcc.Move(transform.forward * activeSlideSpeed * 100 * Runner.DeltaTime, 0);
+                kcc.Move(kcc.transform.forward * activeSlideSpeed * 100 * Runner.DeltaTime, 0);
             }
         }
         public void DecreaseAnimationSpeed(float stateTime, float animationDuration) // Decreases animation speed over time 
