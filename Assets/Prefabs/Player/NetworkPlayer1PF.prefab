@@ -196,7 +196,7 @@ GameObject:
   - component: {fileID: 3523045379917534290}
   m_Layer: 0
   m_Name: WorldSpaceCanvas
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -683,14 +683,14 @@ MonoBehaviour:
     AntiJitterDistance: {x: 0.025, y: 0.01}
     CompressNetworkPosition: 0
     ForcePredictedLookRotation: 0
-    StepHeight: 0.5
-    StepDepth: 0.2
+    StepHeight: 0
+    StepDepth: 0
     StepSpeed: 1
     StepMinPushBack: 0.5
     StepGroundCheckRadiusScale: 0.5
     StepRequireGroundTarget: 0
     SnapDistance: 0
-    SnapSpeed: 4
+    SnapSpeed: 0
 --- !u!114 &5860130360898398493
 MonoBehaviour:
   m_ObjectHideFlags: 0

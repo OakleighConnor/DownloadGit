@@ -9,22 +9,45 @@ public class LobbyUIHandler : NetworkBehaviour
     public GameObject[] settingsButtons;
     [Header("Ready")]
     public bool isReady;
+    TickTimer countdownTickTimer = TickTimer.None;
+    [Networked, OnChangedRender (nameof(OnCountdownChanged))] 
+    public byte countdown {get; set;}
+    public byte countdownDuration;
     [Header("Game Settings")]
     public GameSettings gs;
     [Networked, OnChangedRender (nameof(OnWinRequirementChanged))] 
     public int winRequirement {get; set;} // Amount of disks required to win
 
-    [Header("Game Settings UI")]
+    [Header("UI")]
     public TMP_Text winRequirementValue;
+    public TMP_Text countdownText;
+    public TMP_Text readyButtonText;
+
 
     [Header("Color")]
     [Networked, OnChangedRender (nameof(OnChangeColor))] 
     public Color playerColor {get; set;} // The color of the player
     void Awake()
     {
+        countdownText.text = " ";
+
         foreach (GameObject button in colorButtons)
         {
             button.GetComponent<Button>().onClick.AddListener(() => ChangeColor(button.GetComponent<Image>().color)); // Passes the color of the button through the ChangeColor method
+        }
+    }
+
+    void Update()
+    {
+        if(countdownTickTimer.Expired(Runner))
+        {
+            StartGame();
+
+            countdownTickTimer = TickTimer.None;
+        }   
+        else if (countdownTickTimer.IsRunning)
+        {
+            countdown = (byte)countdownTickTimer.RemainingTime(Runner);
         }
     }
     public override void Spawned()
@@ -69,6 +92,20 @@ public class LobbyUIHandler : NetworkBehaviour
         // Change the player's color
     }
 
+    void StartGame()
+    {
+        Runner.SessionInfo.IsOpen = false;
+
+        GameObject[] gameObjectsToTransfer = GameObject.FindGameObjectsWithTag("Player");
+
+        foreach (GameObject gameObject in gameObjectsToTransfer)
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+
+        Runner.LoadScene("Level");
+    }
+
     // OnChangedRender Methods
     void OnWinRequirementChanged() // Updates the UI text to all clients, and updates the game settings scriptable object, if host
     {
@@ -85,11 +122,37 @@ public class LobbyUIHandler : NetworkBehaviour
         // Change the color of the player
     }
 
-    void OnReady()
+    public void OnReady()
     {
         if(isReady) isReady = false;
         else isReady = true;
 
-        // Make start game
+        if(isReady) readyButtonText.text = "Cancel";
+        else readyButtonText.text = "Ready";
+
+        if(Runner.IsServer)
+        {
+            if(isReady)
+            {
+                countdownTickTimer = TickTimer.CreateFromSeconds(Runner, countdownDuration);
+            }
+            else
+            {
+                countdownTickTimer = TickTimer.None;
+                countdown = 0;
+            }
+        }
+    }
+
+    void OnCountdownChanged()
+    {
+        if(countdown == 0)
+        {
+            countdownText.text = "";
+        }
+        else
+        {
+            countdownText.text = $"Game Session starts in {countdown}";
+        }
     }
 }

@@ -181,7 +181,7 @@ GameObject:
   - component: {fileID: 3523045379917534290}
   m_Layer: 0
   m_Name: WorldSpaceCanvas
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -496,6 +496,7 @@ MonoBehaviour:
   heldObjectVisual: {fileID: 0}
   cm: {fileID: 0}
   cameraPos: {fileID: 4378023543705727318}
+  _menuState: {fileID: 0}
   _idleState: {fileID: 245313877790003001}
   _movementState: {fileID: 3717291686793714873}
   _jumpState: {fileID: 3821605785363837885}

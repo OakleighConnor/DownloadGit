@@ -28,6 +28,11 @@ public class PlayerScoreManager : NetworkBehaviour
         score = startingScore;
     }
 
+    void OnEnable()
+    {
+        
+    }
+
     public void IncreaseScore()
     {
         Debug.Log("Score Increased");

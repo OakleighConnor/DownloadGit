@@ -13,6 +13,7 @@ using UnityEngine.Video;
 using UnityEditor.SearchService;
 using UnityEngine.SceneManagement;
 using UnityEditor;
+using System;
 
 namespace Player
 {
@@ -208,6 +209,29 @@ namespace Player
                 
             }
         }
+        void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
+        {
+            Debug.Log($"New Scene Loaded {scene}");
+
+            if(SceneManager.GetActiveScene().name != "Lobby")
+            {
+                if(Object.HasStateAuthority && Object.HasInputAuthority)
+                {
+                    Spawned();
+                }
+
+                if(Object.HasStateAuthority)
+                {
+                    // Respawn players in desired locations
+                }
+            }
+        }
+
         public override void FixedUpdateNetwork()
         {
             if(GetInput(out NetworkInputData data))
