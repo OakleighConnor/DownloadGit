@@ -10,6 +10,9 @@ using Enemy;
 using Fusion.Addons.SimpleKCC;
 using UnityEngine.TextCore;
 using UnityEngine.Video;
+using UnityEditor.SearchService;
+using UnityEngine.SceneManagement;
+using UnityEditor;
 
 namespace Player
 {
@@ -72,6 +75,7 @@ namespace Player
         public Transform cameraPos;
         
         [Header("States")]
+        [HideInInspector] public MenuState _menuState;
         [HideInInspector] public IdleState _idleState;
         [HideInInspector] public MovementState _movementState;
         [HideInInspector] public JumpState _jumpState;
@@ -87,6 +91,8 @@ namespace Player
 
         void IStateMachineOwner.CollectStateMachines(List<IStateMachine> stateMachines) // Creates State Machine, Initializes States & Assigns State Transitions. Update when implementing new states
         {
+            _menuState = GetComponentInChildren<MenuState>();
+
             // Movement FSM
             _idleState = GetComponentInChildren<IdleState>();
             _movementState = GetComponentInChildren<MovementState>();
@@ -99,10 +105,11 @@ namespace Player
             _holdingState = GetComponentInChildren<HoldingState>();
             
             // Creates new state machines
-            movementMachine = new StateMachine<PlayerStateBehaviour>("Movement Behaviour", _idleState, _movementState, _jumpState, _fallingState, _staggeredState);
+            movementMachine = new StateMachine<PlayerStateBehaviour>("Movement Behaviour", _menuState, _idleState, _movementState, _jumpState, _fallingState, _staggeredState);
             attackMachine = new StateMachine<PlayerStateBehaviour>("Attack Behaviour", _neutralState, _holdingState);
 
             // Assign script reference in each of the states
+            _menuState.Initialize(this);
             _idleState.Initialize(this);
             _movementState.Initialize(this);
             _jumpState.Initialize(this);
@@ -114,6 +121,9 @@ namespace Player
             // Assign transitions between states
 
             // Movement FSM
+            // Menu Transitions
+            _menuState.AddTransition(_idleState, CheckForGame);
+
             // Idle Transitions
             _idleState.AddTransition(_movementState, CheckForMovement);
             _idleState.AddTransition(_fallingState, CheckForFall);
@@ -166,7 +176,9 @@ namespace Player
             transform.rotation = Quaternion.Euler(transform.rotation.x, 90, transform.rotation.z);
             kcc.SetGravity(Physics.gravity.y * 7.5f);
 
-            if(HasInputAuthority)
+            bool inLobby = SceneManager.GetActiveScene().name == "Lobby";
+
+            if(HasInputAuthority && !inLobby)
             {
                 Spawner networkRunnerScript = FindAnyObjectByType<Spawner>();
                 
@@ -205,19 +217,10 @@ namespace Player
 
             Move();
 
-            /*jump = 0;
-
-            if(jumpButtons.WasPressed(previousButtons, jumpInput) && kcc.IsGrounded)
+            if(SceneManager.GetActiveScene().name == "Lobby" || SceneManager.GetActiveScene().name == "Menu")
             {
-                jump = jumpImpulse;
+                movementMachine.ForceActivateState<MenuState>();
             }
-
-            kcc.Move(dir.normalized * speed, jump);
-            previousButtons = jumpButtons;*/
-
-            //Move();
-            //Jump();
-            //GroundCheck();
         }
 
         public override void Render()
@@ -227,7 +230,17 @@ namespace Player
 
         void RotatePlayer() // Rotates the player to face the last input direction
         {
-            transform.rotation = Quaternion.Euler(transform.rotation.x, 90 * faceDir, transform.rotation.z);
+            float rotation;
+            if(faceDir == 0)
+            {
+                rotation = 180;
+            }
+            else
+            {
+                rotation = 90 * faceDir;
+            }
+
+            transform.rotation = Quaternion.Euler(transform.rotation.x, rotation, transform.rotation.z);
         }
 
         public void UpdatePlayerDirection() // Updates the direction the player should face
@@ -241,7 +254,7 @@ namespace Player
         {
             currentSpeed = speed;
 
-            if(movementMachine.ActiveState == _staggeredState)
+            if(movementMachine.ActiveState == _staggeredState || movementMachine.ActiveState == _staggeredState)
             {
                 currentSpeed = 0;
             }
@@ -257,6 +270,7 @@ namespace Player
 
             previousButtons = jumpButtons;
         }
+        bool CheckForGame() => SceneManager.GetActiveScene().name != "Lobby" && SceneManager.GetActiveScene().name != "Menu";
         bool CheckForIdle() => dir.x == 0 && kcc.IsGrounded; // Checks for no player movement input & ground
         bool CheckForMovement() => dir.x != 0 && kcc.IsGrounded; // Checks for player movement input & ground
         //bool CheckForJump() => jumpButtons.IsSet(jumpInput) && kcc.IsGrounded; // Checks for player jump inputs & ground

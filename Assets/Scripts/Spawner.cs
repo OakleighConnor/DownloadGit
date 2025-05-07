@@ -4,11 +4,12 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Threading.Tasks;
-using UnityEngine.SceneManagement;
 using UnityEngine.Diagnostics;
 using Unity.VisualScripting;
+using Player;
 
 public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -62,19 +63,23 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (runner.IsServer)
         {
-            //runner.Spawn(gameManagerPF).GetComponent<GameManager>().networkRunnerScript = GetComponent<Spawner>();
+             Debug.Log("OnPlayerJoined we are server. Spawning player");
 
-            Debug.Log("OnPlayerJoined we are server. Spawning player");
+                Vector3 spawnLocation = new Vector3(0, 10, 0);
 
-            NetworkObject player1 = runner.Spawn(player1PF, new Vector3(0,10,0), Quaternion.identity, player);
+                if(SceneManager.GetActiveScene().name == "Lobby")
+                {
+                    PlayerScript[] players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
 
-            //cameraP1.playerCameraPos = player1.GetComponent<PlayerScript>().cameraPos;
+                    spawnLocation = new Vector3(players.Length * 3 - 4.5f, 0, 0);
+                }
 
-            if (PlayerPrefs.GetInt("LocalPlay") == 1)
-            {
-                NetworkObject player2 = runner.Spawn(player2PF, new Vector3(10,10,0), Quaternion.identity, player);
-                //cameraP2.playerCameraPos = player2.GetComponent<PlayerScript>().cameraPos;
-            }
+                NetworkObject player1 = runner.Spawn(player1PF, spawnLocation, Quaternion.identity, player);
+
+                if (PlayerPrefs.GetInt("LocalPlay") == 1)
+                {
+                    NetworkObject player2 = runner.Spawn(player2PF, new Vector3(10,10,0), Quaternion.identity, player);
+                }
         }
         else
         {

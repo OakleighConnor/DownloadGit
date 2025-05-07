@@ -63,7 +63,7 @@ public class NicknameManager : NetworkBehaviour, IPlayerLeft
         playerNicknameTM.text = nickname.ToString();
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer)]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_SetNickName(string nickname, RpcInfo info = default)
     {
         Debug.Log($"[RPC] SetNickName {nickname}");

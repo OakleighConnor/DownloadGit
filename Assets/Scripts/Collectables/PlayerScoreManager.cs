@@ -1,5 +1,6 @@
 using Fusion;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerScoreManager : NetworkBehaviour
 {
@@ -15,10 +16,12 @@ public class PlayerScoreManager : NetworkBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if(SceneManager.GetActiveScene().name == "Lobby" || SceneManager.GetActiveScene().name == "Menu") return;
         psi.scoreText.text = score.ToString();   
     }
     public override void Spawned()
     {
+        if(SceneManager.GetActiveScene().name == "Lobby" || SceneManager.GetActiveScene().name == "Menu") return;
         psh = FindAnyObjectByType<PlayerScoreUIHandler>();
         psi = psh.CreatePlayerScoreItem();
 

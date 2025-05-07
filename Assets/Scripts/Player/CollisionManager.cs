@@ -1,6 +1,7 @@
 using Fusion;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 public class CollisionManager : NetworkBehaviour
 {
     public bool collisions;
@@ -17,7 +18,7 @@ public class CollisionManager : NetworkBehaviour
     // Update is called once per frame
     public override void FixedUpdateNetwork()
     {
-        if(HasStateAuthority && collisions)
+        if(HasStateAuthority && collisions && SceneManager.GetActiveScene().name != "Lobby" && SceneManager.GetActiveScene().name != "Menu")
         {
             CheckForCollision();
         }
@@ -49,8 +50,6 @@ public class CollisionManager : NetworkBehaviour
             collideableLayers, // Layers that should be read when checking for collisions
             HitOptions.IncludePhysX
         );
-
-        Debug.Log($"Hit count {hitCount}");
 
         // Performs checks for all objects collided with
         for (int i = 0; i < hitCount; i++) // Executes for every layer that was collided with

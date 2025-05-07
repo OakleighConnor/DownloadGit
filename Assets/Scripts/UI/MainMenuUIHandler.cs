@@ -1,10 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using TMPro;
-using Fusion;
-using Unity.VisualScripting;
 
 public class MainMenuUIHandler : MonoBehaviour
 {
@@ -21,7 +16,6 @@ public class MainMenuUIHandler : MonoBehaviour
 
     [Header("References")]
     public CodeManager codeManager;
-    public PlayerSettings playerSettings;
     void Start()
     {
         if(PlayerPrefs.HasKey("PlayerNickname"))
