@@ -5,8 +5,11 @@ using UnityEngine.UI;
 
 public class LobbyUIHandler : NetworkBehaviour
 {
+    [HideInInspector] public CharacterCustomisationHandler cch;
+
     public GameObject[] colorButtons;
     public GameObject[] settingsButtons;
+
     [Header("Ready")]
     public bool isReady;
     TickTimer countdownTickTimer = TickTimer.None;
@@ -22,7 +25,6 @@ public class LobbyUIHandler : NetworkBehaviour
     public TMP_Text winRequirementValue;
     public TMP_Text countdownText;
     public TMP_Text readyButtonText;
-
 
     [Header("Color")]
     [Networked, OnChangedRender (nameof(OnChangeColor))] 
@@ -121,7 +123,6 @@ public class LobbyUIHandler : NetworkBehaviour
         Debug.Log("Player's color changed");
         // Change the color of the player
     }
-
     public void OnReady()
     {
         if(isReady) isReady = false;
@@ -132,7 +133,7 @@ public class LobbyUIHandler : NetworkBehaviour
 
         if(Runner.IsServer)
         {
-            if(isReady)
+            if (isReady)
             {
                 countdownTickTimer = TickTimer.CreateFromSeconds(Runner, countdownDuration);
             }
@@ -142,8 +143,9 @@ public class LobbyUIHandler : NetworkBehaviour
                 countdown = 0;
             }
         }
-    }
 
+        cch.OnReady(isReady);
+    }
     void OnCountdownChanged()
     {
         if(countdown == 0)

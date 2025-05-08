@@ -213,7 +213,6 @@ namespace Player
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
-
         private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
         {
             Debug.Log($"New Scene Loaded {scene}");
@@ -231,7 +230,6 @@ namespace Player
                 }
             }
         }
-
         public override void FixedUpdateNetwork()
         {
             if(GetInput(out NetworkInputData data))
@@ -246,12 +244,10 @@ namespace Player
                 movementMachine.ForceActivateState<MenuState>();
             }
         }
-
         public override void Render()
         {
             RotatePlayer();
         }
-
         void RotatePlayer() // Rotates the player to face the last input direction
         {
             float rotation;
@@ -266,7 +262,6 @@ namespace Player
 
             transform.rotation = Quaternion.Euler(transform.rotation.x, rotation, transform.rotation.z);
         }
-
         public void UpdatePlayerDirection() // Updates the direction the player should face
         {
             if(dir.x != 0) // Only updates direction if direction is being input
@@ -274,7 +269,7 @@ namespace Player
                 faceDir = (int)dir.x;
             }
         }
-        public void Move()
+        public void Move() // Moves the player using the KCC
         {
             currentSpeed = speed;
 
@@ -294,12 +289,12 @@ namespace Player
 
             previousButtons = jumpButtons;
         }
-        bool CheckForGame() => SceneManager.GetActiveScene().name != "Lobby" && SceneManager.GetActiveScene().name != "Menu";
+        bool CheckForGame() => SceneManager.GetActiveScene().name != "Lobby" && SceneManager.GetActiveScene().name != "Menu"; // Checks for scene that isn't used for menus
         bool CheckForIdle() => dir.x == 0 && kcc.IsGrounded; // Checks for no player movement input & ground
         bool CheckForMovement() => dir.x != 0 && kcc.IsGrounded; // Checks for player movement input & ground
         //bool CheckForJump() => jumpButtons.IsSet(jumpInput) && kcc.IsGrounded; // Checks for player jump inputs & ground
         bool CheckForPickup() => actionButtons.IsSet(actionInput) && Object.HasStateAuthority; // Checks if the player is using the action input (checks in state if a holdable object is close enough to the player)
-        public bool CheckForThrow() => !actionButtons.IsSet(actionInput) && Object.HasStateAuthority;
+        public bool CheckForThrow() => !actionButtons.IsSet(actionInput) && Object.HasStateAuthority; // Checks for state authority and if the player lets go of the action button
         public bool CheckForPickupTarget() // Perform raycast checking if theres an object that can be picked up
         {
             Debug.DrawRay(attackPos.position, body.transform.forward * checkLength, Color.red);
@@ -328,8 +323,7 @@ namespace Player
             heldObjectVisual.transform.SetParent(holdPos);
             heldObjectVisual.transform.position = holdPos.position;
         }
-
-        public void ThrowObject()
+        public void ThrowObject() // Instantiates the object the player was holding and calls the Throw method in the IThrowable interface
         {
             if (heldObjectVisual == null || heldObjectPF == null) return;
             Destroy(heldObjectVisual);
@@ -348,8 +342,7 @@ namespace Player
                 throwable.Throw();
             }
         }
-        //bool CheckForFall() => kcc.Velocity.y <= -0.1f; // Checks for downwards velocity & no ground
-        bool CheckForFall() => kcc.RealVelocity.y <= -0.1f;
+        bool CheckForFall() => kcc.RealVelocity.y <= -0.1f; // If momentum down
         bool CheckForBounce() // Performs lag compensated raycast checking for hitboxes. Must only be executed on state authority
         {
             // Raycast values
@@ -413,7 +406,6 @@ namespace Player
             }
         }
     }
-
 }
 
 
