@@ -54,7 +54,7 @@ public class MainMenuUIHandler : MonoBehaviour
     {
         NetworkRunnerHandler networkRunnerHandler = FindAnyObjectByType<NetworkRunnerHandler>();
 
-        networkRunnerHandler.CreateGame(codeManager.GenerateCode(), "Level"); // Generates a random code in the helper
+        networkRunnerHandler.CreateGame(codeManager.GenerateCode(), "Lobby"); // Generates a random code in the helper
 
         HideAllPanels();
 

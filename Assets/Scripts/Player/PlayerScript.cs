@@ -18,7 +18,7 @@ using System;
 namespace Player
 {
     [RequireComponent(typeof(StateMachineController))]
-    public class PlayerScript : NetworkBehaviour, IDamageable, IStateMachineOwner
+    public class PlayerScript : NetworkBehaviour, IDamageable, IStateMachineOwner, IPlayerLeft
     {
         [Header("Local Multiplayer")] // These must be set in the prefabs
         public bool localPlayer;
@@ -403,6 +403,14 @@ namespace Player
             foreach(Hitbox hitbox in hitboxes)
             {
                 hr.SetHitboxActive(hitbox, state);
+            }
+        }
+
+        public void PlayerLeft(PlayerRef player)
+        {
+            if(Object.HasInputAuthority)
+            {
+                Runner.Despawn(Object);
             }
         }
     }

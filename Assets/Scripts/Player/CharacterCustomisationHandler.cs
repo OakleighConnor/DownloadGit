@@ -1,3 +1,4 @@
+using System;
 using Fusion;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
@@ -17,7 +18,9 @@ public class CharacterCustomisationHandler : NetworkBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        readyText.text = "";
+        bool inLobby = SceneManager.GetActiveScene().name == "Lobby";
+
+        readyText.enabled = inLobby;
     }
     public override void Spawned()
     {
@@ -33,14 +36,11 @@ public class CharacterCustomisationHandler : NetworkBehaviour
             UpdateReadyUI(false);
             readyText.transform.rotation = Quaternion.Euler(0,180,0);
         }
-        else
-        {
-            readyText.text = string.Empty;
-        }
     }
     void OnEnable() // Subscribes the OnSceneLoaded method to the sceneLoaded event
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode) // Calls the Spawned method in suitable scenes
     {
@@ -49,12 +49,20 @@ public class CharacterCustomisationHandler : NetworkBehaviour
             if (Object.HasStateAuthority && Object.HasInputAuthority)
             {
                 Spawned();
+                ToggleReadyText(true);
             }
         }
     }
+    private void OnSceneUnloaded(Scene scene) // Disables ready text
+    {
+        bool unloadingLobby = SceneManager.GetActiveScene().name == "Lobby";
+
+        ToggleReadyText(false);
+    }
+    void ToggleReadyText(bool state) => readyText.enabled = state; // Toggles the state of the text that states if a player is ready
     public override void Render()
     {
-        ChangeDetection();
+        if (SceneManager.GetActiveScene().name == "Lobby") ChangeDetection();
     }
     void ChangeDetection() // Checks for changes in variables with the Networked attribute
     {
@@ -100,11 +108,31 @@ public class CharacterCustomisationHandler : NetworkBehaviour
             readyText.color = Color.red;
         }
     }
-
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    void RPC_SetReady(NetworkBool isReady, RpcInfo info = default) // Changes the NetworkBool isReady for all clients triggering the ChangeDetector
+    void RPC_SetReady(NetworkBool isReady, RpcInfo info = default) // Changes isReady bool for this game object. Manages the TickTimer within the LobbyUIHandler
     {
         this.isReady = isReady;
+
+        LobbyUIHandler lobbyUIHandler = FindAnyObjectByType<LobbyUIHandler>();
+
+        if(AllPlayersReady())
+        {
+            lobbyUIHandler.countdownTickTimer = TickTimer.CreateFromSeconds(Runner, lobbyUIHandler.countdownDuration);
+        }
+        else
+        {
+            lobbyUIHandler.countdownTickTimer = TickTimer.None;
+            lobbyUIHandler.countdown = 0;
+        }
+    }
+    bool AllPlayersReady() // Checks all of the CharacterCustomisationHandlers active in the scene. Returns false if any aren't ready
+    {
+        CharacterCustomisationHandler[] players = FindObjectsByType<CharacterCustomisationHandler>(FindObjectsSortMode.None);
+        foreach(CharacterCustomisationHandler player in players)
+        {
+            if(!player.isReady) return false;
+        }
+        return true;
     }
 
 }

@@ -12,7 +12,7 @@ public class LobbyUIHandler : NetworkBehaviour
 
     [Header("Ready")]
     public bool isReady;
-    TickTimer countdownTickTimer = TickTimer.None;
+    public TickTimer countdownTickTimer = TickTimer.None;
     [Networked, OnChangedRender (nameof(OnCountdownChanged))] 
     public byte countdown {get; set;}
     public byte countdownDuration;
@@ -55,6 +55,10 @@ public class LobbyUIHandler : NetworkBehaviour
     public override void Spawned()
     {
         ToggleSettings(HasStateAuthority); // Allows settings to be edited if state authority. Else settings cannot be altered
+    }
+    public override void FixedUpdateNetwork()
+    {
+        
     }
     public void ToggleSettings(bool state) // Toggles all UI elements that change settings
     {
@@ -131,7 +135,7 @@ public class LobbyUIHandler : NetworkBehaviour
         if(isReady) readyButtonText.text = "Cancel";
         else readyButtonText.text = "Ready";
 
-        if(Runner.IsServer)
+        /*if(Runner.IsServer)
         {
             if (isReady)
             {
@@ -142,7 +146,7 @@ public class LobbyUIHandler : NetworkBehaviour
                 countdownTickTimer = TickTimer.None;
                 countdown = 0;
             }
-        }
+        }*/
 
         cch.OnReady(isReady);
     }

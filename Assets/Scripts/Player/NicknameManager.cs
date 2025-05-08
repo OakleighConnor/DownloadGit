@@ -51,7 +51,7 @@ public class NicknameManager : NetworkBehaviour, IPlayerLeft
     {
         if (player == Object.InputAuthority)
         {
-            Runner.Despawn(Object);
+            Destroy(canvas);
         }
     }
 
