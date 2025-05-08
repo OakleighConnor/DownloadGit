@@ -2,13 +2,16 @@ using UnityEngine;
 using Fusion;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System;
 
 public class LobbyUIHandler : NetworkBehaviour
 {
-    [HideInInspector] public CharacterCustomisationHandler cch;
+    [HideInInspector] public List<CharacterCustomisationHandler> cchs = new List<CharacterCustomisationHandler>();
 
-    public GameObject[] colorButtons;
-    public GameObject[] settingsButtons;
+    [Header("SessionSettings")]
+    [Networked, OnChangedRender (nameof(OnPublicityChanged))] 
+    public bool sessionPublic {get; set;}
 
     [Header("Ready")]
     public bool isReady;
@@ -22,6 +25,9 @@ public class LobbyUIHandler : NetworkBehaviour
     public int winRequirement {get; set;} // Amount of disks required to win
 
     [Header("UI")]
+    public GameObject[] colorButtons;
+    public GameObject[] settingsButtons;
+    public GameObject publicityButton;
     public TMP_Text winRequirementValue;
     public TMP_Text countdownText;
     public TMP_Text readyButtonText;
@@ -29,7 +35,7 @@ public class LobbyUIHandler : NetworkBehaviour
     [Header("Color")]
     [Networked, OnChangedRender (nameof(OnChangeColor))] 
     public Color playerColor {get; set;} // The color of the player
-    void Awake()
+    void Start()
     {
         countdownText.text = " ";
 
@@ -55,10 +61,9 @@ public class LobbyUIHandler : NetworkBehaviour
     public override void Spawned()
     {
         ToggleSettings(HasStateAuthority); // Allows settings to be edited if state authority. Else settings cannot be altered
-    }
-    public override void FixedUpdateNetwork()
-    {
-        
+        Runner.SessionInfo.Properties.TryGetValue("Public", out var isSessionPublic);
+        sessionPublic = isSessionPublic;
+        OnPublicityChanged();
     }
     public void ToggleSettings(bool state) // Toggles all UI elements that change settings
     {
@@ -66,6 +71,14 @@ public class LobbyUIHandler : NetworkBehaviour
         {
             button.SetActive(state);
         }
+
+        publicityButton.GetComponent<Button>().enabled = state;
+    }
+    public void OnTogglePublicity() // Toggles the Public SessionProperty in the SessionInfo
+    {
+        Runner.SessionInfo.Properties.TryGetValue("Public", out var wasPublic);
+        sessionPublic = !wasPublic; // Set the publicity of the session to the opposite of what it was
+        Runner.SessionInfo.UpdateCustomProperties(new Dictionary<string, SessionProperty>() {{"Public", sessionPublic}}); // Set the publicity to the opposite of what it was
     }
     public void IncreaseWinRequirement()
     {
@@ -135,20 +148,10 @@ public class LobbyUIHandler : NetworkBehaviour
         if(isReady) readyButtonText.text = "Cancel";
         else readyButtonText.text = "Ready";
 
-        /*if(Runner.IsServer)
+        foreach(CharacterCustomisationHandler cch in cchs)
         {
-            if (isReady)
-            {
-                countdownTickTimer = TickTimer.CreateFromSeconds(Runner, countdownDuration);
-            }
-            else
-            {
-                countdownTickTimer = TickTimer.None;
-                countdown = 0;
-            }
-        }*/
-
-        cch.OnReady(isReady);
+            cch.OnReady(isReady);
+        }
     }
     void OnCountdownChanged()
     {
@@ -159,6 +162,23 @@ public class LobbyUIHandler : NetworkBehaviour
         else
         {
             countdownText.text = $"Game Session starts in {countdown}";
+        }
+    }
+    void OnPublicityChanged() // Updates the PublicityButton to suit the session's publicity
+    {
+        // Get components of the button that will be changed
+        Image buttonImage = publicityButton.GetComponent<Image>();
+        TMP_Text buttonText = publicityButton.GetComponentInChildren<TMP_Text>();
+        
+        if(sessionPublic) // If the button wasn't public, make it public
+        {
+            buttonImage.color = Color.green;
+            buttonText.text = "PUBLIC";
+        }
+        else // If the button was public, make it private
+        {
+            buttonImage.color = Color.red;
+            buttonText.text = "PRIVATE";
         }
     }
 }

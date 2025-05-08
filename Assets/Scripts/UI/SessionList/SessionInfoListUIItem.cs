@@ -19,16 +19,24 @@ public class SessionInfoListUIItem : MonoBehaviour
     {
         this.sessionInfo = sessionInfo;
 
-        sessionNameText.text = sessionInfo.Name;
-        playerCountText.text = $"{sessionInfo.PlayerCount.ToString()}/{sessionInfo.MaxPlayers.ToString()}";
+        // Get Properties of the Session from SessionInfo
+        sessionInfo.Properties.TryGetValue("PlayerCount", out var playerCountProperty);
+        sessionInfo.Properties.TryGetValue("SessionName", out var sessionNameProperty);
 
+        // Convert var to variable type
+        string sessionName = sessionNameProperty;
+        int playerCount = playerCountProperty;
+
+        // Assign UI Text
+        sessionNameText.text = sessionName;
+        playerCountText.text = $"{playerCount.ToString()}/{sessionInfo.MaxPlayers.ToString()}";
+
+        // Join Button
         bool isJoinButtonActive = true;
-
-        if(sessionInfo.PlayerCount >= sessionInfo.MaxPlayers)
+        if(playerCount >= sessionInfo.MaxPlayers)
         {
             isJoinButtonActive = false;
         }
-
         joinButton.gameObject.SetActive(isJoinButtonActive);
     }
 

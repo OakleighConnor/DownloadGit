@@ -28,7 +28,7 @@ public class CharacterCustomisationHandler : NetworkBehaviour
         {
             if (HasInputAuthority)
             {
-                FindAnyObjectByType<LobbyUIHandler>().cch = this;
+                FindAnyObjectByType<LobbyUIHandler>().cchs.Add(this);
             }
 
             Debug.Log("Lobby scene");

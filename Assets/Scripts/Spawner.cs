@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using UnityEngine.Diagnostics;
 using Unity.VisualScripting;
 using Player;
+using System.Linq;
+using ExitGames.Client.Photon.StructWrapping;
 
 public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -63,35 +65,40 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (runner.IsServer)
         {
-             Debug.Log("OnPlayerJoined we are server. Spawning player");
+            Debug.Log("OnPlayerJoined we are server. Spawning player");
 
-                Vector3 spawnLocation = new Vector3(0, 10, 0);
+            SpawnPlayer(runner, player1PF, new Vector3(0, 10, 0), player);
+            if (PlayerPrefs.GetInt("LocalPlay") == 1) SpawnPlayer(runner, player2PF, new Vector3(10, 10, 0), player);
 
-                if(SceneManager.GetActiveScene().name == "Lobby")
-                {
-                    PlayerScript[] players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
-
-                    spawnLocation = new Vector3(players.Length * 3 - 4.5f, 0, 0);
-                }
-
-                NetworkObject player1 = runner.Spawn(player1PF, spawnLocation, Quaternion.identity, player);
-
-                if (PlayerPrefs.GetInt("LocalPlay") == 1)
-                {
-                    NetworkObject player2 = runner.Spawn(player2PF, new Vector3(10,10,0), Quaternion.identity, player);
-                }
+            UpdatePlayerCount(runner);
         }
         else
         {
             Debug.Log("OnPlayerJoined");
         }
     }
+    void SpawnPlayer(NetworkRunner runner, NetworkPrefabRef playerPF, Vector3 spawnLocation, PlayerRef player) // Spawns the player on the runner in a determined location depending on the scene
+    {
+        if(SceneManager.GetActiveScene().name == "Lobby")
+        {
+            PlayerScript[] players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
 
+            spawnLocation = new Vector3(players.Length * 3 - 4.5f, 0, 0);
+        }
+        runner.Spawn(playerPF, spawnLocation, Quaternion.identity, player);
+    }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
     {
-        
+        if(runner.IsServer)
+        {
+            UpdatePlayerCount(runner);
+        }
     }
-    
+    void UpdatePlayerCount(NetworkRunner runner)
+    {
+        PlayerScript[] players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        runner.SessionInfo.UpdateCustomProperties(new Dictionary<string, SessionProperty> {{ "PlayerCount", players.Length}});
+    }
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
         var data = new NetworkInputData();
@@ -132,11 +139,11 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
 
         foreach (SessionInfo sessionInfo in sessionList)
         {
-            sessionInfo.Properties.TryGetValue("Publicity", out var publicity);
+            sessionInfo.Properties.TryGetValue("Public", out var publicSession);
 
-            Debug.Log($"Found session {sessionInfo.Name} playerCount {sessionInfo.PlayerCount} publicity {publicity}");
+            Debug.Log($"Found Session: {sessionInfo.Name} PlayerCount: {sessionInfo.PlayerCount} Public: {publicSession}");
 
-            if (publicity == "public")
+            if (publicSession && sessionInfo.IsOpen)
             {
                 if(publicSessions.Count == 0)
                 {

@@ -4,6 +4,7 @@ using UnityEngine;
 using Fusion;
 using TMPro;
 using JetBrains.Annotations;
+using Player;
 public class NicknameManager : NetworkBehaviour, IPlayerLeft
 {
     public static NicknameManager local { get; set; }
@@ -15,7 +16,6 @@ public class NicknameManager : NetworkBehaviour, IPlayerLeft
     public TextMeshProUGUI playerNicknameTM;
     public Canvas canvas;
     public Transform textPos;
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -30,7 +30,13 @@ public class NicknameManager : NetworkBehaviour, IPlayerLeft
         {
             local = this;
 
-            RPC_SetNickName(PlayerPrefs.GetString("PlayerNickname"));
+            string nickname = PlayerPrefs.GetString("PlayerNickname");
+            if(GetComponent<PlayerScript>().localPlayer)
+            {
+                nickname += "•2";
+            }
+
+            RPC_SetNickName(nickname);
 
             Debug.Log("Spawned local player");
         }

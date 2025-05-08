@@ -38,7 +38,7 @@ public class NetworkRunnerHandler : MonoBehaviour
 
             if (SceneManager.GetActiveScene().name != "Menu")
             {
-                string publicity = "public";
+                bool publicity = true;
                 var clientTask = InitializeNetworkRunner(networkRunner, GameMode.AutoHostOrClient, "TestSession", NetAddress.Any(),  SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex), publicity);
             }
             
@@ -47,7 +47,7 @@ public class NetworkRunnerHandler : MonoBehaviour
     
     }
 
-    protected virtual Task InitializeNetworkRunner(NetworkRunner runner, GameMode gamemode, string sessionName , NetAddress address, SceneRef scene, string publicity)
+    protected virtual Task InitializeNetworkRunner(NetworkRunner runner, GameMode gamemode, string sessionName , NetAddress address, SceneRef scene, bool publicity)
     {
         var sceneManager = runner.GetComponents(typeof(MonoBehaviour)).OfType<INetworkSceneManager>().FirstOrDefault();
 
@@ -70,8 +70,14 @@ public class NetworkRunnerHandler : MonoBehaviour
             Scene = scene,
             SessionName = sessionName,
             CustomLobbyName = "OurLobbyID",
-            SessionProperties = new Dictionary<string, SessionProperty>() {{ "Publicity", publicity }},
             SceneManager = sceneManager,
+            SessionProperties = new Dictionary<string, SessionProperty>() 
+            {
+                { "Public", publicity},
+                { "PlayerCount", 0},
+                { "SessionName", PlayerPrefs.GetString("PlayerNickname")}
+            }
+
         });
     }
 
@@ -102,7 +108,7 @@ public class NetworkRunnerHandler : MonoBehaviour
     {
         Debug.Log($"Create session {sessionName} scene {sceneName} build Index {SceneUtility.GetBuildIndexByScenePath($"scenes/{sceneName}")}");
 
-        string publicity = "public";
+        bool publicity = true;
 
         var clientTask = InitializeNetworkRunner(networkRunner, GameMode.Host, sessionName, NetAddress.Any(), SceneRef.FromIndex(SceneUtility.GetBuildIndexByScenePath($"scenes/{sceneName}")), publicity);
     }
@@ -111,7 +117,7 @@ public class NetworkRunnerHandler : MonoBehaviour
     {
         Debug.Log($"Join session {sessionName}");
 
-        string publicity = "public";
+        bool publicity = true;
 
         // Join existing game as a client
         var clientTask = InitializeNetworkRunner(networkRunner, GameMode.Client, sessionName, NetAddress.Any(), SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex), publicity);
