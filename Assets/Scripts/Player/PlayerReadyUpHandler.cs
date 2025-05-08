@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CharacterCustomisationHandler : NetworkBehaviour
+public class PlayerReadyUpHandler : NetworkBehaviour
 {
     [Networked]
     public NetworkBool isReady { get; set; }
@@ -28,7 +28,7 @@ public class CharacterCustomisationHandler : NetworkBehaviour
         {
             if (HasInputAuthority)
             {
-                FindAnyObjectByType<LobbyUIHandler>().cchs.Add(this);
+                FindAnyObjectByType<LobbyUIHandler>().pruhs.Add(this);
             }
 
             Debug.Log("Lobby scene");
@@ -127,8 +127,8 @@ public class CharacterCustomisationHandler : NetworkBehaviour
     }
     bool AllPlayersReady() // Checks all of the CharacterCustomisationHandlers active in the scene. Returns false if any aren't ready
     {
-        CharacterCustomisationHandler[] players = FindObjectsByType<CharacterCustomisationHandler>(FindObjectsSortMode.None);
-        foreach(CharacterCustomisationHandler player in players)
+        PlayerReadyUpHandler[] players = FindObjectsByType<PlayerReadyUpHandler>(FindObjectsSortMode.None);
+        foreach(PlayerReadyUpHandler player in players)
         {
             if(!player.isReady) return false;
         }

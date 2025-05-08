@@ -7,7 +7,7 @@ using System;
 
 public class LobbyUIHandler : NetworkBehaviour
 {
-    [HideInInspector] public List<CharacterCustomisationHandler> cchs = new List<CharacterCustomisationHandler>();
+    [HideInInspector] public List<PlayerReadyUpHandler> pruhs = new List<PlayerReadyUpHandler>();
 
     [Header("SessionSettings")]
     [Networked, OnChangedRender (nameof(OnPublicityChanged))] 
@@ -103,7 +103,7 @@ public class LobbyUIHandler : NetworkBehaviour
         }
         else
         {
-            winRequirement++;
+            winRequirement--;
         }
     }
     void ChangeColor(Color color) // Sets the color of the player to the color of the button clicked
@@ -148,9 +148,9 @@ public class LobbyUIHandler : NetworkBehaviour
         if(isReady) readyButtonText.text = "Cancel";
         else readyButtonText.text = "Ready";
 
-        foreach(CharacterCustomisationHandler cch in cchs)
+        foreach(PlayerReadyUpHandler pruh in pruhs)
         {
-            cch.OnReady(isReady);
+            pruh.OnReady(isReady);
         }
     }
     void OnCountdownChanged()
