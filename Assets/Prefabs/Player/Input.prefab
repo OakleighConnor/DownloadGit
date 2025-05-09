@@ -111,6 +111,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: bcd9c8f8-0717-4c13-bdd9-bb7abdc04553
     m_ActionName: 'Player/Action[/Keyboard/shift]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1059774639370131737}
+        m_TargetAssemblyTypeName: PlayerInputScript, Assembly-CSharp
+        m_MethodName: OnPause
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: e3979ef2-02e0-4818-9534-c5ac3e63ab9d
+    m_ActionName: 'Player/Pause[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -131,6 +147,9 @@ MonoBehaviour:
   movementInput: {x: 0, y: 0}
   jumpInput: 0
   actionInput: 0
+  pauseGameEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3605564397922317945
 GameObject:
   m_ObjectHideFlags: 0

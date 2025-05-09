@@ -16,7 +16,7 @@ namespace Player
 
         protected override void OnEnterState()
         {
-            player.jump = player.jumpImpulse;
+            player.Jump();
             
         }
 

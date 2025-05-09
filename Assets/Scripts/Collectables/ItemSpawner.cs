@@ -6,7 +6,9 @@ public class ItemSpawner : NetworkBehaviour
     [Header("Floppy Disks")]
     public GameObject floppyDiskPF;
     public GameObject[] diskSpawnLocations;
+    [Networked] byte diskCount { get; set; }
     const byte diskTimerValue = 10;
+    const byte maxDiskCount = 3;
     [Networked] private TickTimer timeUntilDiskSpawn { get; set; }
     void Awake()
     {
@@ -14,14 +16,15 @@ public class ItemSpawner : NetworkBehaviour
     }
     public override void Spawned()
     {
-        if(HasStateAuthority)
+        if(Runner.IsServer)
         {
+            diskCount = 0;
             timeUntilDiskSpawn = TickTimer.CreateFromSeconds(Runner, diskTimerValue);
         }
     }
     public override void FixedUpdateNetwork()
     {
-        if(!spawning || !HasStateAuthority) return;
+        if(!spawning || !Runner.IsServer) return;
         InstantiateFloppyDisks();
     }
     void InstantiateFloppyDisks() // When disk timer ends, finds random location and instantiates disk if the location is active. Disables location after instantiating disk
@@ -33,7 +36,7 @@ public class ItemSpawner : NetworkBehaviour
             return;
         }
 
-        if(timeUntilDiskSpawn.Expired(Runner))
+        if(timeUntilDiskSpawn.Expired(Runner) && diskCount != maxDiskCount)
         {
             Debug.Log("Instantiating Floppy Disk");
             GameObject randomSpawnLocation = diskSpawnLocations[Random.Range(1, diskSpawnLocations.Length)];

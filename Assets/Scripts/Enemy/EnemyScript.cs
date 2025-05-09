@@ -119,13 +119,6 @@ namespace Enemy
         {
             kcc.SetPosition(new Vector3(transform.position.x, transform.position.y, 0));
         }
-        private void OnGUI()
-        {
-            if (GUI.Button(new Rect(10, 10, 150, 100), "Debug hitbox values"))
-            {
-                Debug.Log($"Hitbox States: Active Hitbox: {hr.IsHitboxActive(activeHitbox)} Staggered Hitbox: {hr.IsHitboxActive(staggeredHitbox)}");
-            }
-        }
         public override void FixedUpdateNetwork() 
         {
             Move();

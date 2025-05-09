@@ -1,19 +1,10 @@
 using Fusion;
 using UnityEngine;
 using UnityEngine.Events;
-using System.Collections;
 using Fusion.Addons.FSM;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using Fusion.LagCompensation;
-using Enemy;
 using Fusion.Addons.SimpleKCC;
-using UnityEngine.TextCore;
-using UnityEngine.Video;
-using UnityEditor.SearchService;
 using UnityEngine.SceneManagement;
-using UnityEditor;
-using System;
 
 namespace Player
 {
@@ -288,6 +279,11 @@ namespace Player
             kcc.Move(dir.normalized * currentSpeed, jump);
 
             previousButtons = jumpButtons;
+        }
+        public void Jump() // Resets the velocity of the player's jump
+        {
+            kcc.ResetVelocity();
+            jump = jumpImpulse;
         }
         bool CheckForGame() => SceneManager.GetActiveScene().name != "Lobby" && SceneManager.GetActiveScene().name != "Menu"; // Checks for scene that isn't used for menus
         bool CheckForIdle() => dir.x == 0 && kcc.IsGrounded; // Checks for no player movement input & ground

@@ -28,12 +28,13 @@ public class PlayerReadyUpHandler : NetworkBehaviour
         {
             if (HasInputAuthority)
             {
-                FindAnyObjectByType<LobbyUIHandler>().pruhs.Add(this);
+                LobbyUIHandler lobbyHandler = FindAnyObjectByType<LobbyUIHandler>();
+                if (lobbyHandler != null) lobbyHandler.prhs.Add(this);
             }
 
             Debug.Log("Lobby scene");
             cd = GetChangeDetector(ChangeDetector.Source.SimulationState);
-            UpdateReadyUI(false);
+            UpdateReadyUI(isReady);
             readyText.transform.rotation = Quaternion.Euler(0,180,0);
         }
     }
@@ -108,23 +109,6 @@ public class PlayerReadyUpHandler : NetworkBehaviour
             readyText.color = Color.red;
         }
     }
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    void RPC_SetReady(NetworkBool isReady, RpcInfo info = default) // Changes isReady bool for this game object. Manages the TickTimer within the LobbyUIHandler
-    {
-        this.isReady = isReady;
-
-        LobbyUIHandler lobbyUIHandler = FindAnyObjectByType<LobbyUIHandler>();
-
-        if(AllPlayersReady())
-        {
-            lobbyUIHandler.countdownTickTimer = TickTimer.CreateFromSeconds(Runner, lobbyUIHandler.countdownDuration);
-        }
-        else
-        {
-            lobbyUIHandler.countdownTickTimer = TickTimer.None;
-            lobbyUIHandler.countdown = 0;
-        }
-    }
     bool AllPlayersReady() // Checks all of the CharacterCustomisationHandlers active in the scene. Returns false if any aren't ready
     {
         PlayerReadyUpHandler[] players = FindObjectsByType<PlayerReadyUpHandler>(FindObjectsSortMode.None);
@@ -135,4 +119,21 @@ public class PlayerReadyUpHandler : NetworkBehaviour
         return true;
     }
 
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    void RPC_SetReady(NetworkBool isReady, RpcInfo info = default) // Changes isReady bool for this game object. Manages the TickTimer within the LobbyUIHandler
+    {
+        this.isReady = isReady;
+
+        LobbyUIHandler lobbyUIHandler = FindAnyObjectByType<LobbyUIHandler>();
+
+        if (AllPlayersReady())
+        {
+            lobbyUIHandler.countdownTickTimer = TickTimer.CreateFromSeconds(Runner, lobbyUIHandler.countdownDuration);
+        }
+        else
+        {
+            lobbyUIHandler.countdownTickTimer = TickTimer.None;
+            lobbyUIHandler.countdown = 0;
+        }
+    }
 }

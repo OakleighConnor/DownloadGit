@@ -5,9 +5,9 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 
-public class LobbyUIHandler : NetworkBehaviour
+public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
 {
-    [HideInInspector] public List<PlayerReadyUpHandler> pruhs = new List<PlayerReadyUpHandler>();
+    [HideInInspector] public List<PlayerReadyUpHandler> prhs = new List<PlayerReadyUpHandler>();
 
     [Header("SessionSettings")]
     [Networked, OnChangedRender (nameof(OnPublicityChanged))] 
@@ -18,7 +18,7 @@ public class LobbyUIHandler : NetworkBehaviour
     public TickTimer countdownTickTimer = TickTimer.None;
     [Networked, OnChangedRender (nameof(OnCountdownChanged))] 
     public byte countdown {get; set;}
-    public byte countdownDuration;
+    public byte countdownDuration = 1;
     [Header("Game Settings")]
     public GameSettings gs;
     [Networked, OnChangedRender (nameof(OnWinRequirementChanged))] 
@@ -56,6 +56,14 @@ public class LobbyUIHandler : NetworkBehaviour
         else if (countdownTickTimer.IsRunning)
         {
             countdown = (byte)countdownTickTimer.RemainingTime(Runner);
+        }
+    }
+    public void PlayerJoined(PlayerRef player)
+    {
+        if (Runner.IsServer)
+        {
+            countdownTickTimer = TickTimer.None;
+            countdown = 0;
         }
     }
     public override void Spawned()
@@ -148,10 +156,14 @@ public class LobbyUIHandler : NetworkBehaviour
         if(isReady) readyButtonText.text = "Cancel";
         else readyButtonText.text = "Ready";
 
-        foreach(PlayerReadyUpHandler pruh in pruhs)
+        foreach(PlayerReadyUpHandler prh in prhs)
         {
-            pruh.OnReady(isReady);
+            prh.OnReady(isReady);
         }
+    }
+    public void KickPlayer()
+    {
+
     }
     void OnCountdownChanged()
     {
@@ -161,7 +173,7 @@ public class LobbyUIHandler : NetworkBehaviour
         }
         else
         {
-            countdownText.text = $"Game Session starts in {countdown}";
+            countdownText.text = $"Game Session starts in {countdown + 1}";
         }
     }
     void OnPublicityChanged() // Updates the PublicityButton to suit the session's publicity

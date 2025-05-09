@@ -5,6 +5,7 @@ using Fusion;
 using TMPro;
 using JetBrains.Annotations;
 using Player;
+using UnityEngine.SceneManagement;
 public class NicknameManager : NetworkBehaviour, IPlayerLeft
 {
     public static NicknameManager local { get; set; }

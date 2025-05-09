@@ -24,6 +24,10 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
     [Header("ScriptableObjects")]
     public CodeManager codeManager;
 
+    [Header("Player Objects")]
+    NetworkObject playerObject1;
+    NetworkObject playerObject2;
+
     [Header("LocalPlay")]
     public bool localPlay;
     int value;
@@ -67,8 +71,8 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
         {
             Debug.Log("OnPlayerJoined we are server. Spawning player");
 
-            SpawnPlayer(runner, player1PF, new Vector3(0, 10, 0), player);
-            if (PlayerPrefs.GetInt("LocalPlay") == 1) SpawnPlayer(runner, player2PF, new Vector3(10, 10, 0), player);
+            playerObject1 = SpawnPlayer(runner, player1PF, new Vector3(0, 10, 0), player);
+            if (PlayerPrefs.GetInt("LocalPlay") == 1) playerObject2 = SpawnPlayer(runner, player2PF, new Vector3(10, 10, 0), player);
 
             UpdatePlayerCount(runner);
         }
@@ -77,7 +81,7 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
             Debug.Log("OnPlayerJoined");
         }
     }
-    void SpawnPlayer(NetworkRunner runner, NetworkPrefabRef playerPF, Vector3 spawnLocation, PlayerRef player) // Spawns the player on the runner in a determined location depending on the scene
+    NetworkObject SpawnPlayer(NetworkRunner runner, NetworkPrefabRef playerPF, Vector3 spawnLocation, PlayerRef player) // Spawns the player on the runner in a determined location depending on the scene
     {
         if(SceneManager.GetActiveScene().name == "Lobby")
         {
@@ -85,13 +89,15 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
 
             spawnLocation = new Vector3(players.Length * 3 - 4.5f, 0, 0);
         }
-        runner.Spawn(playerPF, spawnLocation, Quaternion.identity, player);
+        return runner.Spawn(playerPF, spawnLocation, Quaternion.identity, player);
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
     {
         if(runner.IsServer)
         {
             UpdatePlayerCount(runner);
+            runner.Despawn(playerObject1);
+            if(playerObject2 != null) runner.Despawn(playerObject2);
         }
     }
     void UpdatePlayerCount(NetworkRunner runner)
