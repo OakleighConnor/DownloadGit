@@ -19,7 +19,10 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
     public GameObject playerInputPF;
     public GameObject playerCamera;
     public GameObject gameManagerPF;
-    [SerializeField] private NetworkPrefabRef player1PF, player2PF;
+
+    private Dictionary<PlayerRef, NetworkObject> spawnedPlayers = new Dictionary<PlayerRef, NetworkObject>();
+
+    [SerializeField] private NetworkPrefabRef playerContainerPF, player1PF, player2PF;
 
     [Header("ScriptableObjects")]
     public CodeManager codeManager;
@@ -27,6 +30,7 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
     [Header("Player Objects")]
     NetworkObject playerObject1;
     NetworkObject playerObject2;
+    NetworkObject playerContainer;
 
     [Header("LocalPlay")]
     public bool localPlay;
@@ -71,8 +75,12 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
         {
             Debug.Log("OnPlayerJoined we are server. Spawning player");
 
+            //playerContainer = runner.Spawn(playerContainerPF, Vector3.zero, Quaternion.identity, player);
+            runner.SetPlayerObject(player, playerContainer);
+
             playerObject1 = SpawnPlayer(runner, player1PF, new Vector3(0, 10, 0), player);
             if (PlayerPrefs.GetInt("LocalPlay") == 1) playerObject2 = SpawnPlayer(runner, player2PF, new Vector3(10, 10, 0), player);
+
 
             UpdatePlayerCount(runner);
         }
@@ -89,15 +97,21 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
 
             spawnLocation = new Vector3(players.Length * 3 - 4.5f, 0, 0);
         }
-        return runner.Spawn(playerPF, spawnLocation, Quaternion.identity, player);
+        NetworkObject playerObject = runner.Spawn(playerPF, spawnLocation, Quaternion.identity, player);
+        spawnedPlayers.Add(player, playerObject);
+        Debug.Log(player);
+        //playerObject.transform.SetParent(playerContainer.transform);
+
+        return playerObject;
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
     {
-        if(runner.IsServer)
+        Debug.Log(player);
+        if (spawnedPlayers.TryGetValue(player, out NetworkObject playerObject1))
         {
-            UpdatePlayerCount(runner);
+            Debug.Log(playerObject1);
             runner.Despawn(playerObject1);
-            if(playerObject2 != null) runner.Despawn(playerObject2);
+            spawnedPlayers.Remove(player);
         }
     }
     void UpdatePlayerCount(NetworkRunner runner)
@@ -170,7 +184,12 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
+    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
+    {
+        Debug.Log("Shutdown Runner");
+
+        SceneManager.LoadScene("Menu");
+    }
     public void OnConnectedToServer(NetworkRunner runner) { }
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }

@@ -60,6 +60,8 @@ MonoBehaviour:
   playerInputPF: {fileID: 329275106461532070, guid: 29bf0ca69f218d147a3f519ac1afcb67, type: 3}
   playerCamera: {fileID: 9126774626479419913, guid: 1696f820bb700814c813e0d81de45000, type: 3}
   gameManagerPF: {fileID: 3636976326285913544, guid: a2eaf157e1e38c44388e0100ba17f7ff, type: 3}
+  playerContainerPF:
+    RawGuidValue: bab10ff3f22e0e241b2b856d83be67e0
   player1PF:
     RawGuidValue: 230c7deabb57c274fbcf24a905464349
   player2PF:

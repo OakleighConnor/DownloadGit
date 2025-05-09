@@ -22,4 +22,10 @@ public class LevelSettings : NetworkBehaviour
         playerScorePanel.SetActive(!settingsOpen);
         playerSettingsPanel.SetActive(settingsOpen);
     }
+
+    public void OnLeaveSession()
+    {
+        Debug.Log("Shutting down runner");
+        Runner.Shutdown(true, ShutdownReason.Ok);
+    }
 }

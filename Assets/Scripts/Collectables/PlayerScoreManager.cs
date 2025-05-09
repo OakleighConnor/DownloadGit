@@ -53,6 +53,7 @@ public class PlayerScoreManager : NetworkBehaviour
 
     void OnScoreUpdated() // Called when score of the player is changed
     {
+        if (psi == null) return;
         psi.UpdateScore(score);
     }
 }

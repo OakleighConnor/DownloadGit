@@ -3181,7 +3181,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 942058546}
         m_TargetAssemblyTypeName: LevelSettings, Assembly-CSharp
-        m_MethodName: OnLeaveGame
+        m_MethodName: OnLeaveSession
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

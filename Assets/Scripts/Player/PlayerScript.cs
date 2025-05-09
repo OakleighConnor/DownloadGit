@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 namespace Player
 {
     [RequireComponent(typeof(StateMachineController))]
-    public class PlayerScript : NetworkBehaviour, IDamageable, IStateMachineOwner, IPlayerLeft
+    public class PlayerScript : NetworkBehaviour, IDamageable, IStateMachineOwner
     {
         [Header("Local Multiplayer")] // These must be set in the prefabs
         public bool localPlayer;
@@ -204,20 +204,15 @@ namespace Player
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
-        private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode)
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             Debug.Log($"New Scene Loaded {scene}");
 
-            if(SceneManager.GetActiveScene().name != "Lobby")
+            if(SceneManager.GetActiveScene().name != "Lobby" && Object != null)
             {
                 if(Object.HasStateAuthority && Object.HasInputAuthority)
                 {
                     Spawned();
-                }
-
-                if(Object.HasStateAuthority)
-                {
-                    // Respawn players in desired locations
                 }
             }
         }
@@ -282,7 +277,6 @@ namespace Player
         }
         public void Jump() // Resets the velocity of the player's jump
         {
-            kcc.ResetVelocity();
             jump = jumpImpulse;
         }
         bool CheckForGame() => SceneManager.GetActiveScene().name != "Lobby" && SceneManager.GetActiveScene().name != "Menu"; // Checks for scene that isn't used for menus
@@ -399,14 +393,6 @@ namespace Player
             foreach(Hitbox hitbox in hitboxes)
             {
                 hr.SetHitboxActive(hitbox, state);
-            }
-        }
-
-        public void PlayerLeft(PlayerRef player)
-        {
-            if(Object.HasInputAuthority)
-            {
-                Runner.Despawn(Object);
             }
         }
     }

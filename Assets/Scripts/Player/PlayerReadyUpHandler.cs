@@ -45,7 +45,7 @@ public class PlayerReadyUpHandler : NetworkBehaviour
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode) // Calls the Spawned method in suitable scenes
     {
-        if (SceneManager.GetActiveScene().name == "Lobby")
+        if (SceneManager.GetActiveScene().name == "Lobby" && Object != null)
         {
             if (Object.HasStateAuthority && Object.HasInputAuthority)
             {
@@ -58,7 +58,7 @@ public class PlayerReadyUpHandler : NetworkBehaviour
     {
         bool unloadingLobby = SceneManager.GetActiveScene().name == "Lobby";
 
-        ToggleReadyText(false);
+        if(readyText != null) ToggleReadyText(false);
     }
     void ToggleReadyText(bool state) => readyText.enabled = state; // Toggles the state of the text that states if a player is ready
     public override void Render()

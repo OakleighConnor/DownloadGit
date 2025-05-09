@@ -6,6 +6,7 @@ using TMPro;
 using JetBrains.Annotations;
 using Player;
 using UnityEngine.SceneManagement;
+using System;
 public class NicknameManager : NetworkBehaviour, IPlayerLeft
 {
     public static NicknameManager local { get; set; }
@@ -52,6 +53,23 @@ public class NicknameManager : NetworkBehaviour, IPlayerLeft
     void LateUpdate()
     {
         canvas.transform.position = textPos.position;
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.activeSceneChanged += OnSceneChanged;
+    }
+
+    void OnSceneChanged(Scene current, Scene next)
+    {
+        if(SceneManager.GetActiveScene().name == "Lobby" || SceneManager.GetActiveScene().name == "Level")
+        {
+
+        }
+        else
+        {
+            Destroy(canvas);
+        }
     }
 
     public void PlayerLeft(PlayerRef player)

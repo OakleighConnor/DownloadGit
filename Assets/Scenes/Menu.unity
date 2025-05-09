@@ -3655,7 +3655,6 @@ MonoBehaviour:
   inputField: {fileID: 2556386599612715641}
   codeInputText: {fileID: 1704677762}
   codeManager: {fileID: 11400000, guid: ced723a2e9823e545aeac7d9daba9655, type: 2}
-  playerSettings: {fileID: 11400000, guid: fb5bebe2cb5c2c348b48739a08191a55, type: 2}
 --- !u!1 &7998118683216721338
 GameObject:
   m_ObjectHideFlags: 0
