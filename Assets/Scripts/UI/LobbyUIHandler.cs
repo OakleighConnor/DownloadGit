@@ -8,6 +8,7 @@ using System;
 public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
 {
     [HideInInspector] public List<PlayerReadyUpHandler> prhs = new List<PlayerReadyUpHandler>();
+    [HideInInspector] public List<CustomisationHandler> customisations = new List<CustomisationHandler>();
 
     [Header("SessionSettings")]
     [Networked, OnChangedRender (nameof(OnPublicityChanged))] 
@@ -31,10 +32,6 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
     public TMP_Text winRequirementValue;
     public TMP_Text countdownText;
     public TMP_Text readyButtonText;
-
-    [Header("Color")]
-    [Networked, OnChangedRender (nameof(OnChangeColor))] 
-    public Color playerColor {get; set;} // The color of the player
     void Start()
     {
         countdownText.text = " ";
@@ -114,9 +111,13 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
             winRequirement--;
         }
     }
-    void ChangeColor(Color color) // Sets the color of the player to the color of the button clicked
+    public void ChangeColor(Color color) // Sets the color of the player to the color of the button clicked
     {
-        // Change the player's color
+        Debug.Log($"ChangeColor({color})");
+        foreach (CustomisationHandler customisation in customisations)
+        {
+            customisation.ChangeColor(color);
+        }
     }
 
     void StartGame()
@@ -142,11 +143,6 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
         {
             gs.winRequirement = winRequirement;
         }
-    }
-    void OnChangeColor() // Changes the color of the player
-    {
-        Debug.Log("Player's color changed");
-        // Change the color of the player
     }
     public void OnReady()
     {

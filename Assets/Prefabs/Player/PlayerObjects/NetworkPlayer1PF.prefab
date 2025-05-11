@@ -339,7 +339,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -876546973899608171, guid: b2060861f8420ed40927dedd8864b5c0, type: 3}
+  - {fileID: 2100000, guid: 8418bd53fc721da42b63de50495d2275, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -549,6 +549,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6099277770696977733}
   - component: {fileID: 4133405333465218548}
+  - component: {fileID: 3825152208909104018}
   - component: {fileID: -3834714278682390147}
   - component: {fileID: -4409367875689759911}
   - component: {fileID: 8272209817871483866}
@@ -654,6 +655,19 @@ MonoBehaviour:
   _staggeredState: {fileID: 7148933700873980900}
   _neutralState: {fileID: 0}
   _holdingState: {fileID: 0}
+--- !u!114 &3825152208909104018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2484124613595289609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2edc146ab6007334cb0350e90ef16fa3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerBody: {fileID: 73499962749404324}
 --- !u!114 &-3834714278682390147
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -743,6 +757,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 4133405333465218548}
+  - {fileID: 3825152208909104018}
   - {fileID: -3834714278682390147}
   - {fileID: -4409367875689759911}
   - {fileID: 8272209817871483866}

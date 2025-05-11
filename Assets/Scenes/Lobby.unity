@@ -152,7 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7df592f43afa0f49bc0ce01b33495bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cchs: []
+  prhs: []
+  customisations: []
   _sessionPublic: 0
   isReady: 0
   _countdown: 0
@@ -175,7 +176,6 @@ MonoBehaviour:
   winRequirementValue: {fileID: 255933928}
   countdownText: {fileID: 241117222}
   readyButtonText: {fileID: 1253905695}
-  _playerColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &62213406
 MonoBehaviour:
   m_ObjectHideFlags: 0
