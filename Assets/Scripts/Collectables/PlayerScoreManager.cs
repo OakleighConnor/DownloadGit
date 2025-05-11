@@ -7,8 +7,8 @@ public class PlayerScoreManager : NetworkBehaviour
     PlayerScoreUIHandler psh;
     PlayerScoreUIItem psi;
 
+    public GameSettings gameSettings;
     const byte startingScore = 0;
-    const byte winningScore = 5;
 
     [Networked, OnChangedRender (nameof(OnScoreUpdated))] 
     public byte score {get; set;}
@@ -37,6 +37,11 @@ public class PlayerScoreManager : NetworkBehaviour
     {
         Debug.Log("Score Increased");
         score ++;
+
+        if(score >= gameSettings.winRequirement)
+        {
+            Debug.Log("Win");
+        }
     }
 
     public void DecreaseScore()

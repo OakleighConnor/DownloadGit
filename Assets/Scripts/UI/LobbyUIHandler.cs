@@ -163,13 +163,13 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
     }
     void OnCountdownChanged()
     {
-        if(countdown == 0)
+        if(!countdownTickTimer.IsRunning)
         {
             countdownText.text = "";
         }
         else
         {
-            countdownText.text = $"Game Session starts in {countdown + 1}";
+            countdownText.text = $"Game Session starts in {countdown}";
         }
     }
     void OnPublicityChanged() // Updates the PublicityButton to suit the session's publicity

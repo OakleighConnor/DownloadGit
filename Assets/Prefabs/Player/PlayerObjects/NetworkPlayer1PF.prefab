@@ -855,8 +855,8 @@ MonoBehaviour:
     StepMinPushBack: 0.5
     StepGroundCheckRadiusScale: 0.5
     StepRequireGroundTarget: 0
-    SnapDistance: 0
-    SnapSpeed: 0
+    SnapDistance: 0.1
+    SnapSpeed: 1
 --- !u!114 &5860130360898398493
 MonoBehaviour:
   m_ObjectHideFlags: 0
