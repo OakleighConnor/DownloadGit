@@ -17,7 +17,6 @@ namespace Player
         protected override void OnEnterState()
         {
             player.Jump();
-            
         }
 
         protected override void OnFixedUpdate()

@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class MainMenuUIHandler : MonoBehaviour
 {
@@ -9,33 +10,32 @@ public class MainMenuUIHandler : MonoBehaviour
     public GameObject statusPanel;
     
     [Header("Player Settings")]
-    public TMP_InputField inputField;
+    public TMP_InputField nameField;
 
     [Header("Join Settings")]
     public TMP_InputField codeInputText;
 
     [Header("References")]
     public CodeManager codeManager;
-    void Start()
+
+    void Start() // Sets the Player's name to the PlayerPref PlayerNickname and ensures that multiplayer is disabled by default
     {
         if(PlayerPrefs.HasKey("PlayerNickname"))
         {
-            inputField.text = PlayerPrefs.GetString("PlayerNickname");
+            nameField.text = PlayerPrefs.GetString("PlayerNickname");
         }
 
         ToggleLocalMultiplayer(false);
     }
-
-    void HideAllPanels()
+    void HideAllPanels() // Hides all the Panels
     {
         playerDetailsPanel.SetActive(false);
         sessionBrowserPanel.SetActive(false);
         statusPanel.SetActive(false);
     }
-
-    public void OnFindGameClicked()
+    public void OnFindGameClicked() // Sets the PlayerNickname PlayerPrefs, joins a NetworkRunner to a lobby, opens the SessionBrowserPanel
     {
-        PlayerPrefs.SetString("PlayerNickname", inputField.text);
+        PlayerPrefs.SetString("PlayerNickname", nameField.text);
         PlayerPrefs.Save();
 
         //GameManager.instance.playerNickname = playerNicknameField.text;
@@ -49,8 +49,7 @@ public class MainMenuUIHandler : MonoBehaviour
         sessionBrowserPanel.gameObject.SetActive(true);
         FindFirstObjectByType<SessionListUIHandler>().OnLookingForGameSessions();
     }
-
-    public void OnStartNewSessionClicked()
+    public void OnStartNewSessionClicked() // Creates a new Session in the NetworkRunnerHandler and changes the panel to the loading panel
     {
         NetworkRunnerHandler networkRunnerHandler = FindAnyObjectByType<NetworkRunnerHandler>();
 
@@ -60,12 +59,11 @@ public class MainMenuUIHandler : MonoBehaviour
 
         statusPanel.gameObject.SetActive(true);
     }
-
-    public void OnJoinNewSessionClicked()
+    public void OnJoinNewSessionClicked() // Attempts to join the player to a session with the code entered into the code InputField
     {
         if (codeInputText.text.Length != 6)
         {
-            Debug.Log("Code isn't a real length");
+            codeInputText.text = "INVALID";
             return;
         }
 
@@ -79,16 +77,17 @@ public class MainMenuUIHandler : MonoBehaviour
 
         statusPanel.gameObject.SetActive(true);
     }
-
-    public void OnJoiningServer()
+    public void OnJoiningServer() // Sets the active panel to the StatusPanel
     {
         HideAllPanels();
 
         statusPanel.gameObject.SetActive(true);
     }
 
-    public void ToggleLocalMultiplayer(bool state)
+    public void ToggleLocalMultiplayer(bool state) // Sets the LocalPlay PlayerPref
     {
+        // false = 0
+        // true = 1
         if(state == true)
         {
             Debug.Log("Enable Local Play");

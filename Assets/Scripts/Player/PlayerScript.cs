@@ -15,6 +15,9 @@ namespace Player
         public bool localPlayer;
         public UnityEvent<NetworkInputData> applyInput;
 
+        [Header("AudioManager")]
+        [SerializeField] AudioManager am;
+
         [Header("Prefabs")]
         public GameObject playerInputPF;
 
@@ -277,6 +280,7 @@ namespace Player
         }
         public void Jump() // Resets the velocity of the player's jump
         {
+            am.PlaySFX(am.jumpSFX);
             jump = jumpImpulse;
         }
         bool CheckForGame() => SceneManager.GetActiveScene().name != "Lobby" && SceneManager.GetActiveScene().name != "Menu"; // Checks for scene that isn't used for menus
