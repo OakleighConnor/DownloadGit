@@ -24,7 +24,7 @@ public class AudioManager : ScriptableObject
     AudioSource sfxSource;
     void OnEnable() // Subscribes OnLoadScene to SceneManager.sceneLoaded
     {
-        SceneManager.sceneLoaded += OnLoadScene;
+        //SceneManager.sceneLoaded += OnLoadScene;
     }
     void OnLoadScene(Scene scene, LoadSceneMode mode) // Instantiates new audio sources and sets the music to what should play in the scene
     {

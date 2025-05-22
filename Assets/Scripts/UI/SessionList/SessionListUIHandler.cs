@@ -50,9 +50,10 @@ public class SessionListUIHandler : MonoBehaviour
     public void OnNoSessionFound()
     {
         ClearList();
+        Debug.Log("No sessions found");
 
-        statusText.text = "No game session found";
         statusText.gameObject.SetActive(true);
+        statusText.text = "No game session found";
     }
 
     public void OnLookingForGameSessions()

@@ -104,13 +104,13 @@ public class NetworkRunnerHandler : MonoBehaviour
         }
     }
 
-    public void CreateGame(string sessionName, string sceneName)
+    public void CreateGame(string sessionName, string sceneName, string publicity)
     {
         Debug.Log($"Create session {sessionName} scene {sceneName} build Index {SceneUtility.GetBuildIndexByScenePath($"scenes/{sceneName}")}");
 
-        bool publicity = true;
+        bool publicSession = publicity == "Public";
 
-        var clientTask = InitializeNetworkRunner(networkRunner, GameMode.Host, sessionName, NetAddress.Any(), SceneRef.FromIndex(SceneUtility.GetBuildIndexByScenePath($"scenes/{sceneName}")), publicity);
+        var clientTask = InitializeNetworkRunner(networkRunner, GameMode.Host, sessionName, NetAddress.Any(), SceneRef.FromIndex(SceneUtility.GetBuildIndexByScenePath($"scenes/{sceneName}")), publicSession);
     }
 
     public void JoinGame(string sessionName)

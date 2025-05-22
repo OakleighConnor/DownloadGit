@@ -1,13 +1,26 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class MainMenuUIHandler : MonoBehaviour
 {
+    [Header("Game Settings")]
+    [SerializeField] GameSettings gameSettings;
+
+    [Header("Animation")]
+    [SerializeField] Animator anim;
+    
     [Header("Panels")]
-    public GameObject playerDetailsPanel;
+    public GameObject mainMenuPanel;
     public GameObject sessionBrowserPanel;
+    public GameObject createSessionPanel;
     public GameObject statusPanel;
+
+    [Header("CreateSessionSettings")]
+    public TMP_Text diskWinRequirementDisplay;
+    public TMP_Text publicity;
+
     
     [Header("Player Settings")]
     public TMP_InputField nameField;
@@ -20,18 +33,35 @@ public class MainMenuUIHandler : MonoBehaviour
 
     void Start() // Sets the Player's name to the PlayerPref PlayerNickname and ensures that multiplayer is disabled by default
     {
-        if(PlayerPrefs.HasKey("PlayerNickname"))
+        if (PlayerPrefs.HasKey("DiskWinRequirement"))
+        {
+            gameSettings.winRequirement = PlayerPrefs.GetInt("DiskWinRequirement");
+            diskWinRequirementDisplay.text = gameSettings.winRequirement.ToString();
+        }
+        if (PlayerPrefs.HasKey("SessionPublicity"))
+        {
+            publicity.text = PlayerPrefs.GetString("SessionPublicity");
+
+        }
+
+        ChangePanel(mainMenuPanel, 1);
+        
+        if (PlayerPrefs.HasKey("PlayerNickname"))
         {
             nameField.text = PlayerPrefs.GetString("PlayerNickname");
         }
 
         ToggleLocalMultiplayer(false);
     }
-    void HideAllPanels() // Hides all the Panels
+    void ChangePanel(GameObject activePanel, int cameraPos) // Hides all the Panels
     {
-        playerDetailsPanel.SetActive(false);
+        mainMenuPanel.SetActive(false);
         sessionBrowserPanel.SetActive(false);
+        createSessionPanel.SetActive(false);
         statusPanel.SetActive(false);
+
+        activePanel.SetActive(true);
+        anim.SetInteger("CameraPos", cameraPos);
     }
     public void OnFindGameClicked() // Sets the PlayerNickname PlayerPrefs, joins a NetworkRunner to a lobby, opens the SessionBrowserPanel
     {
@@ -44,20 +74,44 @@ public class MainMenuUIHandler : MonoBehaviour
 
         networkRunnerHandler.OnJoinLobby();
 
-        HideAllPanels();
-
-        sessionBrowserPanel.gameObject.SetActive(true);
+        ChangePanel(sessionBrowserPanel, 2);
         FindFirstObjectByType<SessionListUIHandler>().OnLookingForGameSessions();
     }
+    public void OpenCreateSessionPanel() // Create Session Button inside of the SessionBrowserPanel
+    {
+        ChangePanel(createSessionPanel, 1);
+    }
+
+    public void TogglePublicity()
+    {
+        if (publicity.text == "Public") publicity.text = "Private";
+        else publicity.text = "Public";
+    }
+
+    public void IncreaseWinRequirement()
+    {
+        if (gameSettings.winRequirement >= 99) gameSettings.winRequirement = 1;
+        else gameSettings.winRequirement++;
+        diskWinRequirementDisplay.text = gameSettings.winRequirement.ToString();
+    }
+    public void DecreaseWinRequirement()
+    {
+        if (gameSettings.winRequirement <= 1) gameSettings.winRequirement = 99;
+        else gameSettings.winRequirement--;
+        diskWinRequirementDisplay.text = gameSettings.winRequirement.ToString();
+    }
+
     public void OnStartNewSessionClicked() // Creates a new Session in the NetworkRunnerHandler and changes the panel to the loading panel
     {
+        PlayerPrefs.SetInt("DiskWinRequirement", gameSettings.winRequirement);
+        PlayerPrefs.SetString("SessionPublicity", publicity.text);
+        PlayerPrefs.Save();
+
         NetworkRunnerHandler networkRunnerHandler = FindAnyObjectByType<NetworkRunnerHandler>();
 
-        networkRunnerHandler.CreateGame(codeManager.GenerateCode(), "Lobby"); // Generates a random code in the helper
+        networkRunnerHandler.CreateGame(codeManager.GenerateCode(), "Lobby", publicity.text); // Generates a random code in the helper
 
-        HideAllPanels();
-
-        statusPanel.gameObject.SetActive(true);
+        ChangePanel(statusPanel, 3);
     }
     public void OnJoinNewSessionClicked() // Attempts to join the player to a session with the code entered into the code InputField
     {
@@ -73,15 +127,11 @@ public class MainMenuUIHandler : MonoBehaviour
 
         networkRunnerHandler.JoinGame(codeInputText.text);
 
-        HideAllPanels();
-
-        statusPanel.gameObject.SetActive(true);
+        ChangePanel(statusPanel, 3);
     }
     public void OnJoiningServer() // Sets the active panel to the StatusPanel
     {
-        HideAllPanels();
-
-        statusPanel.gameObject.SetActive(true);
+        ChangePanel(statusPanel, 3);
     }
 
     public void ToggleLocalMultiplayer(bool state) // Sets the LocalPlay PlayerPref

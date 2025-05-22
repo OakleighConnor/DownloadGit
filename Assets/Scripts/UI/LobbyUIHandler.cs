@@ -25,16 +25,23 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
     [Networked, OnChangedRender (nameof(OnWinRequirementChanged))] 
     public int winRequirement {get; set;} // Amount of disks required to win
 
-    [Header("UI")]
+    [Header("Buttons")]
+    public GameObject publicityButton;
+    public GameObject settingsPanel;
+    public GameObject settingsButton;
+    public GameObject readyButton;
     public GameObject[] colorButtons;
     public GameObject[] settingsButtons;
-    public GameObject publicityButton;
+
+    [Header("Text")]
     public TMP_Text winRequirementValue;
     public TMP_Text countdownText;
     public TMP_Text readyButtonText;
     void Start()
     {
         countdownText.text = " ";
+
+        settingsPanel.SetActive(false);
 
         foreach (GameObject button in colorButtons)
         {
@@ -69,6 +76,12 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
         Runner.SessionInfo.Properties.TryGetValue("Public", out var isSessionPublic);
         sessionPublic = isSessionPublic;
         OnPublicityChanged();
+
+        if (Runner.IsServer)
+        {
+            winRequirement = gs.winRequirement;
+        }
+        winRequirementValue.text = winRequirement.ToString();
     }
     public void ToggleSettings(bool state) // Toggles all UI elements that change settings
     {
@@ -79,11 +92,26 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
 
         publicityButton.GetComponent<Button>().enabled = state;
     }
+    public void OnToggleSettingsPanel()
+    {
+        if (settingsPanel.activeSelf == true)
+        {
+            settingsPanel.SetActive(false);
+            readyButton.SetActive(true);
+            settingsButton.SetActive(true);
+        }
+        else
+        {
+            settingsPanel.SetActive(true);
+            readyButton.SetActive(false);
+            settingsButton.SetActive(false);
+        }
+    }
     public void OnTogglePublicity() // Toggles the Public SessionProperty in the SessionInfo
     {
         Runner.SessionInfo.Properties.TryGetValue("Public", out var wasPublic);
         sessionPublic = !wasPublic; // Set the publicity of the session to the opposite of what it was
-        Runner.SessionInfo.UpdateCustomProperties(new Dictionary<string, SessionProperty>() {{"Public", sessionPublic}}); // Set the publicity to the opposite of what it was
+        Runner.SessionInfo.UpdateCustomProperties(new Dictionary<string, SessionProperty>() { { "Public", sessionPublic } }); // Set the publicity to the opposite of what it was
     }
     public void IncreaseWinRequirement()
     {
@@ -149,7 +177,11 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
         if(isReady) isReady = false;
         else isReady = true;
 
-        if(isReady) readyButtonText.text = "Cancel";
+        settingsButton.SetActive(!isReady);
+
+        if (settingsPanel.activeSelf) settingsPanel.SetActive(false);
+
+        if (isReady) readyButtonText.text = "Cancel";
         else readyButtonText.text = "Ready";
 
         foreach(PlayerReadyUpHandler prh in prhs)
