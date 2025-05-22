@@ -37,6 +37,7 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
     public TMP_Text winRequirementValue;
     public TMP_Text countdownText;
     public TMP_Text readyButtonText;
+    public TMP_Text sessionCode;
     void Start()
     {
         countdownText.text = " ";
@@ -72,6 +73,7 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
     }
     public override void Spawned()
     {
+        sessionCode.text = "CODE: " + Runner.SessionInfo.Name;
         ToggleSettings(HasStateAuthority); // Allows settings to be edited if state authority. Else settings cannot be altered
         Runner.SessionInfo.Properties.TryGetValue("Public", out var isSessionPublic);
         sessionPublic = isSessionPublic;
