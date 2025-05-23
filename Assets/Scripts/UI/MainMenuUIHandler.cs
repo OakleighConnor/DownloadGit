@@ -54,6 +54,11 @@ public class MainMenuUIHandler : MonoBehaviour
 
         ToggleLocalMultiplayer(false);
     }
+
+    public void OnQuit()
+    {
+        Application.Quit();
+    }
     void ChangePanel(GameObject activePanel, int cameraPos) // Hides all the Panels
     {
         mainMenuPanel.SetActive(false);
