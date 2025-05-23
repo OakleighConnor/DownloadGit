@@ -7,6 +7,7 @@ public class MainMenuUIHandler : MonoBehaviour
 {
     [Header("Game Settings")]
     [SerializeField] GameSettings gameSettings;
+    [SerializeField] Toggle localMultiplayer;
 
     [Header("Animation")]
     [SerializeField] Animator anim;
@@ -134,11 +135,16 @@ public class MainMenuUIHandler : MonoBehaviour
         ChangePanel(statusPanel, 3);
     }
 
-    public void ToggleLocalMultiplayer(bool state) // Sets the LocalPlay PlayerPref
+    public void OnToggleLocalMultiplayer()
+    {
+        ToggleLocalMultiplayer(localMultiplayer);
+    }
+
+    void ToggleLocalMultiplayer(bool state) // Sets the LocalPlay PlayerPref
     {
         // false = 0
         // true = 1
-        if(state == true)
+        if (state == true)
         {
             Debug.Log("Enable Local Play");
             PlayerPrefs.SetInt("LocalPlay", 1);
