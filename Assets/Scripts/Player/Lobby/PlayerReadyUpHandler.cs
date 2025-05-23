@@ -112,7 +112,6 @@ public class PlayerReadyUpHandler : NetworkBehaviour
     bool AllPlayersReady() // Checks all of the CharacterCustomisationHandlers active in the scene. Returns false if any aren't ready
     {
         PlayerReadyUpHandler[] players = FindObjectsByType<PlayerReadyUpHandler>(FindObjectsSortMode.None);
-        if (players.Length <= 1) return false;
         foreach (PlayerReadyUpHandler player in players)
         {
             if (!player.isReady) return false;

@@ -6,7 +6,7 @@ public class CollectableScript : NetworkBehaviour, ICollectable
     public void Collect(PlayerScoreManager psm)
     {
         Debug.Log($"Collected {gameObject}");
-        psm.IncreaseScore();
+        //psm.IncreaseScore();
         spawnLocation.SetActive(true); // Allows collectables to be spawned here in future
         Runner.Despawn(Object);
     }

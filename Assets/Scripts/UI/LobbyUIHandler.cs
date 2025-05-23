@@ -199,10 +199,12 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
     {
         if(!countdownTickTimer.IsRunning)
         {
+            countdownText.gameObject.SetActive(false);
             countdownText.text = "";
         }
         else
         {
+            countdownText.gameObject.SetActive(true);
             countdownText.text = $"Game Session starts in {countdown}";
         }
     }

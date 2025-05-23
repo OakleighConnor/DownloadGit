@@ -11,7 +11,7 @@ public class LevelSettings : NetworkBehaviour
     bool settingsOpen;
     public void Awake()
     {
-        playerScorePanel.SetActive(!settingsOpen);
+        //playerScorePanel.SetActive(!settingsOpen);
         playerSettingsPanel.SetActive(settingsOpen);
     }
     public void ToggleSettings() // Called when settings input is used
@@ -19,7 +19,7 @@ public class LevelSettings : NetworkBehaviour
         settingsOpen = !settingsOpen;
 
         // Toggle UI Panels
-        playerScorePanel.SetActive(!settingsOpen);
+        //playerScorePanel.SetActive(!settingsOpen);
         playerSettingsPanel.SetActive(settingsOpen);
     }
 
