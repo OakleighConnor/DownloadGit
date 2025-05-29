@@ -17,14 +17,14 @@ public class PlayerScoreManager : NetworkBehaviour
     void Start()
     {
         if(SceneManager.GetActiveScene().name == "Lobby" || SceneManager.GetActiveScene().name == "Menu") return;
-        psi.scoreText.text = score.ToString();   
+        //psi.scoreText.text = score.ToString();   
     }
     public override void Spawned()
     {
         if(SceneManager.GetActiveScene().name == "Lobby" || SceneManager.GetActiveScene().name == "Menu") return;
         psh = FindAnyObjectByType<PlayerScoreUIHandler>();
-        psi = psh.CreatePlayerScoreItem();
-
+        //psi = psh.CreatePlayerScoreItem();
+        
         score = startingScore;
     }
 

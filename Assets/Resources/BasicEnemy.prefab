@@ -726,14 +726,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4158389527057839407}
-  - component: {fileID: 5608098228631501233}
+  - component: {fileID: 7984240286061100506}
   m_Layer: 10
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4158389527057839407
 Transform:
   m_ObjectHideFlags: 0
@@ -749,8 +749,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6640568264065160908}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &5608098228631501233
-SphereCollider:
+--- !u!136 &7984240286061100506
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -759,17 +759,19 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.35
-  m_Center: {x: 0, y: 0.36, z: 0}
+  serializedVersion: 2
+  m_Radius: 0.22
+  m_Height: 0.6
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.35, z: 0}
 --- !u!1 &4081581528303336407
 GameObject:
   m_ObjectHideFlags: 0

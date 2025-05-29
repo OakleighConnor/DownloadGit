@@ -31,6 +31,7 @@ public class MainMenuUIHandler : MonoBehaviour
 
     [Header("References")]
     public CodeManager codeManager;
+    public AudioManager am;
 
     void Start() // Sets the Player's name to the PlayerPref PlayerNickname and ensures that multiplayer is disabled by default
     {
@@ -46,7 +47,7 @@ public class MainMenuUIHandler : MonoBehaviour
         }
 
         ChangePanel(mainMenuPanel, 1);
-        
+
         if (PlayerPrefs.HasKey("PlayerNickname"))
         {
             nameField.text = PlayerPrefs.GetString("PlayerNickname");
