@@ -10,7 +10,9 @@ public class AudioManager : MonoBehaviour
     public static AudioManager instance;
 
     [Header("Music")]
-
+    public AudioClip menuTheme;
+    public AudioClip lobbyTheme;
+    public AudioClip levelTheme;
 
     [Header("SFX")]
 
@@ -49,20 +51,50 @@ public class AudioManager : MonoBehaviour
         {
             button.onClick.AddListener(() => PlayRandomUISFX());
         }
+
+        PlaySceneMusic(SceneManager.GetActiveScene().name);
+    }
+
+    void PlaySceneMusic(string scene)
+    {
+        if (scene == "Menu")
+        {
+            PlayMusic(menuTheme);
+        }
+        else if (scene == "Lobby")
+        {
+            PlayMusic(lobbyTheme);
+        }
+        else
+        {
+            PlayMusic(levelTheme);
+        }
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        //PlaySceneMusic(SceneManager.GetActiveScene().name);
+
         if (PlayerPrefs.HasKey("musicVolume"))
         {
+            // Load the volume using the PlayerPrefs
             LoadVolume();
         }
         else
         {
-            //SetMusicVolume();
-            //SetSFXVolume();
+            // Set the volume to max
+            SetMasterVolume(1);
+            SetMusicVolume(1);
+            SetSFXVolume(1);
         }
+    }
+
+    void LoadVolume()
+    {
+        SetMasterVolume(PlayerPrefs.GetFloat("masterVolume"));
+        SetMusicVolume(PlayerPrefs.GetFloat("musicVolume"));
+        SetSFXVolume(PlayerPrefs.GetFloat("sfxVolume"));
     }
 
     public void RestartMusic()
@@ -86,7 +118,11 @@ public class AudioManager : MonoBehaviour
         musicSource.clip = music;
         musicSource.Play();
     }
-
+    public void SetMasterVolume(float volume) // Sets and saves music volume
+    {
+        audioMixer.SetFloat("master", Mathf.Log10(volume) * 20);
+        PlayerPrefs.SetFloat("masterVolume", volume);
+    }
     public void SetMusicVolume(float volume) // Sets and saves music volume
     {
         audioMixer.SetFloat("music", Mathf.Log10(volume) * 20);
@@ -94,15 +130,7 @@ public class AudioManager : MonoBehaviour
     }
     public void SetSFXVolume(float volume) // Sets and saves sfx volume
     {
-        audioMixer.SetFloat("sfx", Mathf.Log10(volume) * 20);
+        audioMixer.SetFloat("sfx", (Mathf.Log10(volume) + 0.5f) * 20);
         PlayerPrefs.SetFloat("sfxVolume", volume);
-    }
-    public void LoadVolume() // Loads saved volumes and sets them
-    {
-        /*musicSlider.value = PlayerPrefs.GetFloat("musicVolume");
-        sfxSlider.value = PlayerPrefs.GetFloat("sfxVolume");*/
-
-        SetMusicVolume(PlayerPrefs.GetFloat("musicVolume"));
-        SetSFXVolume(PlayerPrefs.GetFloat("sfxVolume"));
     }
 }

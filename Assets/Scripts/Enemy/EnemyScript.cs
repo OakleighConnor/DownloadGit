@@ -154,11 +154,13 @@ namespace Enemy
         }
         public bool CheckForCollision() // Checks for walls or other enemies and turns around if collision occurs 
         {
-            Debug.DrawRay(edgeCheckPos.position, transform.forward * collisionRayLength, Color.blue);
+            Vector3 checkPos = new Vector3(transform.position.x, edgeCheckPos.position.y, transform.position.z);
+
+            Debug.DrawRay(checkPos, transform.forward * collisionRayLength, Color.blue);
 
             RaycastHit hit;
             // Does the ray intersect any objects excluding the player layer
-            if (Physics.Raycast(edgeCheckPos.position, transform.forward, out hit, collisionRayLength, collideable))
+            if (Physics.Raycast(checkPos, transform.forward, out hit, collisionRayLength, collideable))
             {
                 return true;
             }
