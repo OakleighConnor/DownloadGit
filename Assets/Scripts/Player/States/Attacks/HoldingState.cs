@@ -47,7 +47,7 @@ namespace Player
 
         protected override void OnExitStateRender()
         {
-
+            player.am.PlaySFX(player.am.playerThrow);
         }
     }
 }

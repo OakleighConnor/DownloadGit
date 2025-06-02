@@ -13,7 +13,7 @@ public class PlayerInputScript : MonoBehaviour
 
     void Awake()
     {
-        if(pauseGameEvent == null)
+        if (pauseGameEvent == null)
         {
             pauseGameEvent = new UnityEvent();
         }
@@ -21,8 +21,8 @@ public class PlayerInputScript : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "Level")
         {
             Debug.Log("Level found");
-            LevelSettings levelSettings = FindAnyObjectByType<LevelSettings>();
-            pauseGameEvent.AddListener(levelSettings.ToggleSettings);
+            PauseMenuHandler pauseMenu = FindAnyObjectByType<PauseMenuHandler>();
+            pauseGameEvent.AddListener(pauseMenu.TogglePanel);
         }
     }
     void OnEnable()

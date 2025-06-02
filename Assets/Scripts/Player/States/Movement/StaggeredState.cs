@@ -43,6 +43,7 @@ namespace Player
             Debug.Log("Staggered...");
             // Animation
             player.anim.Play("Stagger");
+            player.am.PlaySFX(player.am.playerDamage);
         }
 
         protected override void OnRender()

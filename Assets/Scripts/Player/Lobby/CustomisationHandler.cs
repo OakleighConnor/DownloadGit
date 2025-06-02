@@ -2,15 +2,26 @@ using UnityEngine;
 using Fusion;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using Player;
+using UnityEngine.UI;
 public class CustomisationHandler : NetworkBehaviour
 {
     [SerializeField] Renderer playerBody;
+    int player;
 
     [Networked, OnChangedRender(nameof(OnAppearanceChanged))]
     Color color {get; set;}
-    public void ChangeColor(Color color) // Changes the Networked color variable
+    void Awake()
     {
-        if(HasInputAuthority) // Only update the color variable of the player who clicked the button
+        bool localPlayer = GetComponent<PlayerScript>().localPlayer;
+        Debug.Log(localPlayer);
+
+        if (localPlayer) player = 2;
+        else player = 1;
+    }
+    public void ChangeColor(Color color, byte player) // Changes the Networked color variable
+    {
+        if (HasInputAuthority && player == this.player) // Only update the color variable of the player who clicked the button
         {
             Debug.Log($"Updating player {gameObject}'s color to {color}");
             RPC_SetColor(color);
@@ -22,18 +33,32 @@ public class CustomisationHandler : NetworkBehaviour
     }
     public override void Spawned()
     {
-        if(SceneManager.GetActiveScene().name == "Lobby")
+        OnAppearanceChanged();
+
+        if (SceneManager.GetActiveScene().name == "Lobby")
         {
             if (HasInputAuthority)
             {
                 LobbyUIHandler lobbyHandler = FindAnyObjectByType<LobbyUIHandler>();
                 if (lobbyHandler != null) lobbyHandler.customisations.Add(this);
+
+                RPC_SetColor(GetRandomPlayerColor(lobbyHandler.colorButtonSettingP1));
             }
 
             Debug.Log("Lobby scene");
         }
+    }
+    Color GetRandomPlayerColor(GameObject colorButtonsParent) // Gets a random color from the colors the player can choose from
+    {
+        List<Color> colors = new List<Color>();
+        Button[] colorButtons = colorButtonsParent.GetComponentsInChildren<Button>();
 
-        OnAppearanceChanged();
+        foreach (Button button in colorButtons) // Adds the color of each button within the parent of the color buttons to the list
+        {
+            colors.Add(button.GetComponent<Image>().color);
+        }
+
+        return colors[Random.Range(0, colors.Count)];
     }
     void OnEnable() // Subscribes the OnSceneLoaded method to the sceneLoaded event
     {
@@ -49,7 +74,6 @@ public class CustomisationHandler : NetworkBehaviour
             }
         }
     }
-
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     void RPC_SetColor(Color color, RpcInfo info = default) // Updates Networked variable color on the server
     {

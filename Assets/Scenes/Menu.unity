@@ -4180,8 +4180,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1071572749}
-        m_TargetAssemblyTypeName: MainMenuUIHandler, Assembly-CSharp
+      - m_Target: {fileID: 1071572750}
+        m_TargetAssemblyTypeName: SettingsHandler, Assembly-CSharp
         m_MethodName: SetSFXVolume
         m_Mode: 1
         m_Arguments:
@@ -5454,6 +5454,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1071572748}
   - component: {fileID: 1071572749}
+  - component: {fileID: 1071572750}
   m_Layer: 6
   m_Name: MenuHandler
   m_TagString: Untagged
@@ -5499,12 +5500,23 @@ MonoBehaviour:
   diskWinRequirementDisplay: {fileID: 1743614480}
   publicity: {fileID: 266633326}
   nameField: {fileID: 842048774}
+  codeInputText: {fileID: 1300639044}
+  codeManager: {fileID: 11400000, guid: ced723a2e9823e545aeac7d9daba9655, type: 2}
+--- !u!114 &1071572750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1071572747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c91b4ba4e9096438bb17f2fd070b92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   masterSlider: {fileID: 1657785565}
   musicSlider: {fileID: 1580286633}
   sfxSlider: {fileID: 866418492}
-  codeInputText: {fileID: 1300639044}
-  codeManager: {fileID: 11400000, guid: ced723a2e9823e545aeac7d9daba9655, type: 2}
-  am: {fileID: 0}
 --- !u!1 &1075919719
 GameObject:
   m_ObjectHideFlags: 0
@@ -7007,6 +7019,11 @@ MonoBehaviour:
   menuTheme: {fileID: 8300000, guid: c03e0bbe8fd7ad44b9aa5966fddadea4, type: 3}
   lobbyTheme: {fileID: 8300000, guid: 0d37ef0288b0b9442902333cf29ef44b, type: 3}
   levelTheme: {fileID: 8300000, guid: 591f3a4f2e3c61e4dbbccf2fd22f2966, type: 3}
+  playerJump: {fileID: 8300000, guid: 2c5292ba5cf254919a6b9e2b18e04f49, type: 3}
+  playerBounce: {fileID: 8300000, guid: 19f89c6e740e7447f9e12a8310d3e973, type: 3}
+  playerThrow: {fileID: 8300000, guid: d46323e22e74e46baa241cbf48c85671, type: 3}
+  playerDamage: {fileID: 8300000, guid: 5039414d94a6e4e70a5ab9e8833e992a, type: 3}
+  collect: {fileID: 8300000, guid: cf6c0e7fbef9449c98a0cdb5ea0c4d9f, type: 3}
   buttonSounds:
   - {fileID: 8300000, guid: 245965889d0a183438ef3478b27122c0, type: 3}
   - {fileID: 8300000, guid: 0d54653003bc3524ab6b64cac060bd52, type: 3}
@@ -8116,8 +8133,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1071572749}
-        m_TargetAssemblyTypeName: MainMenuUIHandler, Assembly-CSharp
+      - m_Target: {fileID: 1071572750}
+        m_TargetAssemblyTypeName: SettingsHandler, Assembly-CSharp
         m_MethodName: SetMusicVolume
         m_Mode: 1
         m_Arguments:
@@ -8490,8 +8507,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1071572749}
-        m_TargetAssemblyTypeName: MainMenuUIHandler, Assembly-CSharp
+      - m_Target: {fileID: 1071572750}
+        m_TargetAssemblyTypeName: SettingsHandler, Assembly-CSharp
         m_MethodName: SetMasterVolume
         m_Mode: 1
         m_Arguments:

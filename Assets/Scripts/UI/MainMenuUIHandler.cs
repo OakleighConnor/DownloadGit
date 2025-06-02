@@ -1,9 +1,6 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using UnityEngine.Video;
-using UnityEngine.SceneManagement;
-using System;
 
 public class MainMenuUIHandler : MonoBehaviour
 {
@@ -28,26 +25,12 @@ public class MainMenuUIHandler : MonoBehaviour
     
     [Header("Player Settings")]
     public TMP_InputField nameField;
-    [SerializeField] Slider masterSlider;
-    [SerializeField] Slider musicSlider;
-    [SerializeField] Slider sfxSlider;
 
     [Header("Join Settings")]
     public TMP_InputField codeInputText;
 
     [Header("References")]
     public CodeManager codeManager;
-    public AudioManager am;
-
-    void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        am = FindAnyObjectByType<AudioManager>(FindObjectsInactive.Include);
-    }
 
     void Start() // Sets the Player's name to the PlayerPref PlayerNickname and ensures that multiplayer is disabled by default
     {
@@ -69,19 +52,7 @@ public class MainMenuUIHandler : MonoBehaviour
             nameField.text = PlayerPrefs.GetString("PlayerNickname");
         }
 
-        if (PlayerPrefs.HasKey("musicVolume"))
-        {
-            LoadVolume();
-        }
-
         ToggleLocalMultiplayer(false);
-    }
-
-    void LoadVolume()
-    {
-        masterSlider.value = PlayerPrefs.GetFloat("masterVolume");
-        musicSlider.value = PlayerPrefs.GetFloat("musicVolume");
-        sfxSlider.value = PlayerPrefs.GetFloat("sfxVolume");
     }
 
     public void OnQuit()
@@ -140,19 +111,6 @@ public class MainMenuUIHandler : MonoBehaviour
     {
         if (settingsPanel.activeSelf) ChangePanel(mainMenuPanel, 1); // If settings open, go to main menu
         else ChangePanel(settingsPanel, 2); // If settings close, go to settings
-    }
-
-    public void SetMasterVolume()
-    {
-        am.SetMasterVolume(masterSlider.value);
-    }
-    public void SetMusicVolume()
-    {
-        am.SetMusicVolume(musicSlider.value);
-    }
-    public void SetSFXVolume()
-    {
-        am.SetSFXVolume(sfxSlider.value);
     }
 
     public void OnStartNewSessionClicked() // Creates a new Session in the NetworkRunnerHandler and changes the panel to the loading panel

@@ -14,8 +14,14 @@ public class AudioManager : MonoBehaviour
     public AudioClip lobbyTheme;
     public AudioClip levelTheme;
 
-    [Header("SFX")]
+    [Header("Player SFX")]
+    public AudioClip playerJump;
+    public AudioClip playerBounce;
+    public AudioClip playerThrow;
+    public AudioClip playerDamage;
 
+    [Header("Collectable SFX")]
+    public AudioClip collect;
 
     [Header("UI SFX")]
     public AudioClip[] buttonSounds;

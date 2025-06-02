@@ -34,6 +34,7 @@ namespace Player
             Debug.Log("Jumping...");
             // Animation
             player.anim.Play("Jump");
+            player.am.PlaySFX(player.am.playerJump);
         }
 
         protected override void OnRender()

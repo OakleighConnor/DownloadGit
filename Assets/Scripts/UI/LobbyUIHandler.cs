@@ -3,7 +3,7 @@ using Fusion;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using System;
+using Unity.VisualScripting;
 
 public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
 {
@@ -12,41 +12,69 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
 
     [Header("SessionSettings")]
     [Networked, OnChangedRender (nameof(OnPublicityChanged))] 
-    public bool sessionPublic {get; set;}
+    [SerializeField] bool sessionPublic {get; set;}
 
     [Header("Ready")]
-    public bool isReady;
+    [SerializeField] bool isReady;
     public TickTimer countdownTickTimer = TickTimer.None;
     [Networked, OnChangedRender (nameof(OnCountdownChanged))] 
     public byte countdown {get; set;}
     public byte countdownDuration = 1;
     [Header("Game Settings")]
-    public GameSettings gs;
+    [SerializeField] GameSettings gs;
     [Networked, OnChangedRender (nameof(OnWinRequirementChanged))] 
-    public int winRequirement {get; set;} // Amount of disks required to win
+    [SerializeField] int winRequirement {get; set;} // Amount of disks required to win
 
     [Header("Buttons")]
-    public GameObject publicityButton;
-    public GameObject settingsPanel;
-    public GameObject settingsButton;
-    public GameObject readyButton;
-    public GameObject[] colorButtons;
-    public GameObject[] settingsButtons;
+    [SerializeField] GameObject publicityButton;
+    [SerializeField] GameObject settingsPanel;
+    [SerializeField] GameObject settingsButton;
+    [SerializeField] GameObject readyButton;
+    [SerializeField] GameObject[] settingsButtons;
+
+    [Header("Customisation UI")]
+    [SerializeField] TMP_Text colorButtonSettingTextP1;
+    public GameObject colorButtonSettingP1;
+    public GameObject colorButtonSettingP2;
 
     [Header("Text")]
-    public TMP_Text winRequirementValue;
-    public TMP_Text countdownText;
-    public TMP_Text readyButtonText;
-    public TMP_Text sessionCode;
-    void Start()
+    [SerializeField] TMP_Text winRequirementValue;
+    [SerializeField] TMP_Text countdownText;
+    [SerializeField] TMP_Text readyButtonText;
+    [SerializeField] TMP_Text sessionCode;
+    void Awake()
     {
         countdownText.text = " ";
 
         settingsPanel.SetActive(false);
 
-        foreach (GameObject button in colorButtons)
+        // Add ChangeColor method as a listener of OnClick on P1's buttons
+        Button[] colorButtons = colorButtonSettingP1.GetComponentsInChildren<Button>();
+        foreach (Button button in colorButtons)
         {
-            button.GetComponent<Button>().onClick.AddListener(() => ChangeColor(button.GetComponent<Image>().color)); // Passes the color of the button through the ChangeColor method
+            Color buttonColor = button.GetComponent<Image>().color;
+            button.onClick.AddListener(() => ChangeColor(buttonColor, 1)); // Passes the color of the button through the ChangeColor method
+        }
+
+        colorButtonSettingP2.SetActive(false);
+        if (PlayerPrefs.GetInt("LocalPlay") == 1)
+        {
+            AddLocalPlayerSettings();
+        }
+    }
+
+    void AddLocalPlayerSettings()
+    {
+        colorButtonSettingTextP1.text = "Player 1 Colors"; // Updates P1's text to specify P1 when there are two players
+
+        colorButtonSettingP2.SetActive(true);
+
+        // Add ChangeColor method as a listener of OnClick on P2's buttons
+        Button[] colorButtons = colorButtonSettingP2.GetComponentsInChildren<Button>();
+        foreach (Button button in colorButtons)
+        {
+            Color buttonColor = button.GetComponent<Image>().color;
+            button.onClick.AddListener(() => ChangeColor(buttonColor, 2)); // Passes the color of the button through the ChangeColor method
         }
     }
 
@@ -141,12 +169,12 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
             winRequirement--;
         }
     }
-    public void ChangeColor(Color color) // Sets the color of the player to the color of the button clicked
+    public void ChangeColor(Color color, byte player) // Sets the color of the player to the color of the button clicked
     {
         Debug.Log($"ChangeColor({color})");
         foreach (CustomisationHandler customisation in customisations)
         {
-            customisation.ChangeColor(color);
+            customisation.ChangeColor(color, player);
         }
     }
 

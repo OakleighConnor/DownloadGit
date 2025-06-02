@@ -11,6 +11,8 @@ namespace Player
     [RequireComponent(typeof(StateMachineController))]
     public class PlayerScript : NetworkBehaviour, IDamageable, IStateMachineOwner
     {
+        public AudioManager am;
+
         [Header("Local Multiplayer")] // These must be set in the prefabs
         public bool localPlayer;
         public UnityEvent<NetworkInputData> applyInput;
@@ -160,6 +162,9 @@ namespace Player
 
             // CollisionManager
             cm = GetComponent<CollisionManager>();
+
+            // AudioManager
+            am = FindAnyObjectByType<AudioManager>();
 
             moving = true;
         }
@@ -316,6 +321,7 @@ namespace Player
         public void ThrowObject() // Instantiates the object the player was holding and calls the Throw method in the IThrowable interface
         {
             if (heldObjectVisual == null || heldObjectPF == null) return;
+
             Destroy(heldObjectVisual);
 
             Debug.Log("Throw");
@@ -387,6 +393,7 @@ namespace Player
         {
             Debug.Log("DAMAGED");
             movementMachine.ForceActivateState<StaggeredState>();
+            am.PlaySFX(am.playerDamage);
         }
         public void ToggleHitboxes(bool state) // Changes the state of the hixboxes to whatever is passed through the method
         {
