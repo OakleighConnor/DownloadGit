@@ -8,10 +8,12 @@ public class SessionListUIHandler : MonoBehaviour
     public TextMeshProUGUI statusText;
     public GameObject sessionItemListPF;
     public VerticalLayoutGroup verticalLayoutGroup;
+    public GameObject createSessionButton;
 
     void Awake()
     {
         ClearList();
+        createSessionButton.gameObject.SetActive(false);
     }
 
     public void ClearList()
@@ -35,6 +37,8 @@ public class SessionListUIHandler : MonoBehaviour
 
         // Hook up events
         addedSessionInfoListUIItem.OnJoinSession += AddedSessionInfoListUIItem_OnJoinSession;
+        
+        createSessionButton.SetActive(false);
     }
 
     private void AddedSessionInfoListUIItem_OnJoinSession(SessionInfo sessionInfo)
@@ -54,13 +58,14 @@ public class SessionListUIHandler : MonoBehaviour
 
         statusText.gameObject.SetActive(true);
         statusText.text = "No game session found";
+        createSessionButton.SetActive(true);
     }
 
     public void OnLookingForGameSessions()
     {
         ClearList();
 
-        statusText.text = "Looking for game sessions";
+        statusText.text = "Connecting to server";
         statusText.gameObject.SetActive(true);
     }
 }

@@ -225,7 +225,7 @@ public class LobbyUIHandler : NetworkBehaviour, IPlayerJoined
     }
     void OnCountdownChanged()
     {
-        if(!countdownTickTimer.IsRunning)
+        if(countdown == 0)
         {
             countdownText.gameObject.SetActive(false);
             countdownText.text = "";

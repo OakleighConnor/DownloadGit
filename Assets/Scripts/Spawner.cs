@@ -165,7 +165,7 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
 
             if (publicSession && sessionInfo.IsOpen)
             {
-                if(publicSessions.Count == 0)
+                if (publicSessions.Count == 0)
                 {
                     sessionListUIHandler.ClearList();
                 }

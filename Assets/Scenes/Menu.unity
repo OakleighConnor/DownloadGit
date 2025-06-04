@@ -3436,6 +3436,7 @@ MonoBehaviour:
   statusText: {fileID: 1469543776}
   sessionItemListPF: {fileID: 6466012707078661062, guid: 3a8e4365c2a08034a8ef68b8bd4e0e5a, type: 3}
   verticalLayoutGroup: {fileID: 924191606}
+  createSessionButton: {fileID: 57941901}
 --- !u!1 &705950046
 GameObject:
   m_ObjectHideFlags: 0
