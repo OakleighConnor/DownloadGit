@@ -1,64 +1,63 @@
 using Fusion;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerScoreManager : NetworkBehaviour
 {
-    PlayerScoreUIHandler psh;
-    PlayerScoreUIItem psi;
+    [SerializeField] GameSettings gameSettings;
+    [HideInInspector] public PlayerScoreUIItem scoreUI;
+    public string nickname;
 
-    public GameSettings gameSettings;
     const byte startingScore = 0;
 
-    [Networked, OnChangedRender (nameof(OnScoreUpdated))] 
-    public byte score {get; set;}
+    [Networked, OnChangedRender(nameof(OnScoreUpdated))]
+    public byte score { get; set; }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void AssignScoreUIValues(PlayerScoreUIItem scoreUI)
     {
-        if(SceneManager.GetActiveScene().name == "Lobby" || SceneManager.GetActiveScene().name == "Menu") return;
-        //psi.scoreText.text = score.ToString();   
+        this.scoreUI = scoreUI;
+        scoreUI.nicknameText.text = nickname;
+        scoreUI.scoreBackground.color = GetComponent<CustomisationHandler>().color;
     }
+
     public override void Spawned()
     {
-        if(SceneManager.GetActiveScene().name == "Lobby" || SceneManager.GetActiveScene().name == "Menu") return;
-        psh = FindAnyObjectByType<PlayerScoreUIHandler>();
-        //psi = psh.CreatePlayerScoreItem();
-        
         score = startingScore;
     }
 
-    void OnEnable()
-    {
-        
-    }
-
-    public void IncreaseScore()
+    public void IncreaseScore() // Calls server to increase the score
     {
         Debug.Log("Score Increased");
-        score ++;
-
-        if(score >= gameSettings.winRequirement)
-        {
-            Debug.Log("Win");
-        }
+        
+        RPC_UpdateScore(score + 1);
     }
-
-    public void DecreaseScore()
+    public void DecreaseScore() // Calls server to decrease the score
     {
-        if(score <= 0)
+        if (score! <= 0)
         {
-            Debug.Log("Score is already 0. Score wasn't decreased");
-            return;
+            RPC_UpdateScore(score--);
         }
-
-        score --;
-        Debug.Log("Score Decreased");
+        else
+        {
+            Debug.LogWarning("Attempting to decrease score when score is already equal to 0");
+        }
     }
 
     void OnScoreUpdated() // Called when score of the player is changed
     {
-        if (psi == null) return;
-        psi.UpdateScore(score);
+        scoreUI.scoreText.text = score.ToString();
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_UpdateScore(int score, RpcInfo info = default) // Called by clients to update server with score
+    {
+        Debug.Log($"[RPC] UpdateScore {score}");
+
+        this.score = (byte)score;
+
+        if (score >= gameSettings.winRequirement)
+        {
+            PlayerScoreUIHandler uiScoreHandler = FindAnyObjectByType<PlayerScoreUIHandler>();
+            uiScoreHandler.EndGame(nickname);
+        }
     }
 }

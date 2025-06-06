@@ -10,7 +10,7 @@ public class CustomisationHandler : NetworkBehaviour
     int player;
 
     [Networked, OnChangedRender(nameof(OnAppearanceChanged))]
-    Color color {get; set;}
+    public Color color {get; set;}
     void Awake()
     {
         bool localPlayer = GetComponent<PlayerScript>().localPlayer;

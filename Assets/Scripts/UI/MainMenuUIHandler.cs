@@ -17,6 +17,10 @@ public class MainMenuUIHandler : MonoBehaviour
     [SerializeField] GameObject createSessionPanel;
     [SerializeField] GameObject statusPanel;
     [SerializeField] GameObject settingsPanel;
+    [SerializeField] GameObject winnerDisplayPanel;
+
+    [Header("WinnerDisplay")]
+    [SerializeField] TMP_Text winnerAnnouncement;
 
     [Header("CreateSessionSettings")]
     public TMP_Text diskWinRequirementDisplay;
@@ -34,23 +38,14 @@ public class MainMenuUIHandler : MonoBehaviour
 
     void Start() // Sets the Player's name to the PlayerPref PlayerNickname and ensures that multiplayer is disabled by default
     {
-        if (PlayerPrefs.HasKey("DiskWinRequirement"))
-        {
-            gameSettings.winRequirement = PlayerPrefs.GetInt("DiskWinRequirement");
-            diskWinRequirementDisplay.text = gameSettings.winRequirement.ToString();
-        }
-        if (PlayerPrefs.HasKey("SessionPublicity"))
-        {
-            publicity.text = PlayerPrefs.GetString("SessionPublicity");
+        if (PlayerPrefs.HasKey("DiskWinRequirement")) gameSettings.winRequirement = PlayerPrefs.GetInt("DiskWinRequirement");
+        else gameSettings.winRequirement = 5;
+        diskWinRequirementDisplay.text = gameSettings.winRequirement.ToString();
 
-        }
+        if (PlayerPrefs.HasKey("SessionPublicity")) publicity.text = PlayerPrefs.GetString("SessionPublicity");
+        if (PlayerPrefs.HasKey("PlayerNickname")) nameField.text = PlayerPrefs.GetString("PlayerNickname");
 
         ChangePanel(mainMenuPanel, 1);
-
-        if (PlayerPrefs.HasKey("PlayerNickname"))
-        {
-            nameField.text = PlayerPrefs.GetString("PlayerNickname");
-        }
 
         ToggleLocalMultiplayer(false);
     }
@@ -65,10 +60,16 @@ public class MainMenuUIHandler : MonoBehaviour
         sessionBrowserPanel.SetActive(false);
         createSessionPanel.SetActive(false);
         statusPanel.SetActive(false);
+        winnerDisplayPanel.SetActive(false);
         settingsPanel.SetActive(false);
 
         activePanel.SetActive(true);
         anim.SetInteger("CameraPos", cameraPos);
+    }
+    public void DisplayWinner(string player)
+    {
+        ChangePanel(winnerDisplayPanel, 1);
+        winnerAnnouncement.text = $"Player {player} won the game";
     }
     public void OnFindGameClicked() // Sets the PlayerNickname PlayerPrefs, joins a NetworkRunner to a lobby, opens the SessionBrowserPanel
     {

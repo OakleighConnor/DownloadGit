@@ -720,7 +720,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2119bbec4ddb62e40af94a8b296d1e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSettings: {fileID: 0}
+  gameSettings: {fileID: 11400000, guid: e696a7c90dbe8b448bbf6d5c2e60a86b, type: 2}
+  scoreUI: {fileID: 0}
+  nickname: 
   _score: 0
 --- !u!114 &-8481952370257275068
 MonoBehaviour:

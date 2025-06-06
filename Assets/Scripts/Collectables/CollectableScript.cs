@@ -12,7 +12,7 @@ public class CollectableScript : NetworkBehaviour, ICollectable
     {
         Debug.Log($"Collected {gameObject}");
         am.PlaySFX(am.collect);
-        //psm.IncreaseScore();
+        psm.IncreaseScore();
         spawnLocation.SetActive(true); // Allows collectables to be spawned here in future
         Runner.Despawn(Object);
     }

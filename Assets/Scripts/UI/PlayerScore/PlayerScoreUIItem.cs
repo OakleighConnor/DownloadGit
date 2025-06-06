@@ -1,16 +1,16 @@
 using UnityEngine;
 using Fusion;
 using TMPro;
+using UnityEngine.UI;
 
 public class PlayerScoreUIItem : MonoBehaviour
 {
+    public TextMeshProUGUI nicknameText;
     public TextMeshProUGUI scoreText;
+    public Image scoreBackground;
     void Awake()
     {
         scoreText.text = 0.ToString();
-    }
-    public void UpdateScore(byte score)
-    {
-        scoreText.text = score.ToString();
+        scoreBackground.color = GetComponent<CustomisationHandler>().color;
     }
 }

@@ -15,6 +15,8 @@ using ExitGames.Client.Photon.StructWrapping;
 
 public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
 {
+    [HideInInspector] public string winnerName;
+
     [Header("Prefabs")]
     public GameObject playerInputPF;
     public GameObject playerCamera;
@@ -100,7 +102,6 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
         NetworkObject playerObject = runner.Spawn(playerPF, spawnLocation, Quaternion.identity, player);
         spawnedPlayers.Add(player, playerObject);
         Debug.Log(player);
-        //playerObject.transform.SetParent(playerContainer.transform);
 
         return playerObject;
     }
@@ -186,9 +187,18 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-        Debug.Log("Shutdown Runner");
-
         SceneManager.LoadScene("Menu");
+
+        Debug.Log("Disconnected from Session");
+        if (shutdownReason == ShutdownReason.Ok)
+        {
+            Debug.Log("Reason: Player left the session");
+        }
+        if (shutdownReason == ShutdownReason.GameClosed)
+        {
+            Debug.Log($"Game has finished. Winning player: {winnerName}");
+            FindAnyObjectByType<MainMenuUIHandler>().DisplayWinner(winnerName);
+        }
     }
     public void OnConnectedToServer(NetworkRunner runner) { }
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }

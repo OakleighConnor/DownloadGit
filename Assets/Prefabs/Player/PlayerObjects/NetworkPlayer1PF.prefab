@@ -599,6 +599,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2628f0730c0273e4793f80b4025a17a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  am: {fileID: 11400000, guid: 994a15eef7971974ea5c8ed7ea816801, type: 2}
   localPlayer: 0
   applyInput:
     m_PersistentCalls:
@@ -615,7 +616,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  am: {fileID: 11400000, guid: 994a15eef7971974ea5c8ed7ea816801, type: 2}
   playerInputPF: {fileID: 329275106461532070, guid: 29bf0ca69f218d147a3f519ac1afcb67, type: 3}
   dir: {x: 0, y: 0}
   speed: 15
@@ -720,7 +720,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2119bbec4ddb62e40af94a8b296d1e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSettings: {fileID: 0}
+  gameSettings: {fileID: 11400000, guid: e696a7c90dbe8b448bbf6d5c2e60a86b, type: 2}
+  scoreUI: {fileID: 0}
+  nickname: 
   _score: 0
 --- !u!114 &-8481952370257275068
 MonoBehaviour:

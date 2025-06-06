@@ -11,19 +11,29 @@ public class NicknameManager : NetworkBehaviour, IPlayerLeft
 {
     public static NicknameManager local { get; set; }
 
-    [Networked, OnChangedRender (nameof(OnNickNameChanged))] 
+    PlayerScoreManager psm;
+
+    [Networked, OnChangedRender(nameof(OnNickNameChanged))] 
     public NetworkString<_16> nickname { get; set; }
 
     [Header("UI")]
     public TextMeshProUGUI playerNicknameTM;
     public Canvas canvas;
     public Transform textPos;
+
+    void Awake()
+    {
+        psm = GetComponent<PlayerScoreManager>();
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         gameObject.name = nickname.ToString();
         playerNicknameTM.text = nickname.ToString();
         canvas.gameObject.transform.parent = null;
+
+        psm.nickname = nickname.ToString();
     }
 
     public override void Spawned()
@@ -35,7 +45,7 @@ public class NicknameManager : NetworkBehaviour, IPlayerLeft
             string nickname = PlayerPrefs.GetString("PlayerNickname");
             if(GetComponent<PlayerScript>().localPlayer)
             {
-                nickname += "•2";
+                nickname += " • 2";
             }
 
             RPC_SetNickName(nickname);
