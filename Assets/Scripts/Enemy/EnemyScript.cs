@@ -106,11 +106,6 @@ namespace Enemy
 
             kcc.SetGravity(Physics.gravity.y * 4.0f);
         }
-        public void Update()
-        {
-            if (enemyMachine == null) return;
-            Debug.Log($"Enemy State: {enemyMachine.ActiveState}");
-        }
         public void SetGravity(float gravity)
         {
             kcc.SetGravity(Physics.gravity.y * gravity);

@@ -26,7 +26,7 @@ namespace Player
 
             if(player.CheckForThrow())
             {
-                //Machine.TryDeactivateState(StateId);
+                Machine.TryDeactivateState(StateId);
             }
         }
         

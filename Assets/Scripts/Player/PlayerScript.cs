@@ -11,6 +11,10 @@ namespace Player
     [RequireComponent(typeof(StateMachineController))]
     public class PlayerScript : NetworkBehaviour, IDamageable, IStateMachineOwner
     {
+        [Header("Invinsibility")]
+        [Networked] public TickTimer invincibility { get; set; }
+        public static byte invincibilityDuration = 2;
+
         public AudioManager am;
 
         [Header("Local Multiplayer")] // These must be set in the prefabs
@@ -148,6 +152,9 @@ namespace Player
             stateMachines.Add(attackMachine);
             
         }
+
+        public void StartIFrameTimer() => invincibility = TickTimer.CreateFromSeconds(Runner, 5.0f);
+        public bool IFramesEnded() => invincibility.Expired(Runner);
         private void Awake()
         {
             // Character Controller
@@ -155,7 +162,7 @@ namespace Player
 
             // Animation
             anim = GetComponentInChildren<Animator>();
-            
+
             // Photon Fusion Hitboxes
             hitboxes = GetComponentsInChildren<Hitbox>();
             hr = GetComponent<HitboxRoot>();
@@ -170,6 +177,8 @@ namespace Player
         }
         public override void Spawned() // Spawns player input component + canera and assigns input variables in the Spawner script
         {
+            invincibility = TickTimer.CreateFromSeconds(Runner, .1f);
+
             transform.rotation = Quaternion.Euler(transform.rotation.x, 90, transform.rotation.z);
             kcc.SetGravity(Physics.gravity.y * 7.5f);
 
@@ -391,9 +400,12 @@ namespace Player
         }
         public void Damage() // IDamageable Interface
         {
-            Debug.Log("DAMAGED");
-            movementMachine.ForceActivateState<StaggeredState>();
-            am.PlaySFX(am.playerDamage);
+            if (invincibility.Expired(Runner))
+            {
+                Debug.Log("DAMAGED");
+                movementMachine.ForceActivateState<StaggeredState>();
+                am.PlaySFX(am.playerDamage);
+            }
         }
         public void ToggleHitboxes(bool state) // Changes the state of the hixboxes to whatever is passed through the method
         {

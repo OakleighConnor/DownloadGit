@@ -1,6 +1,8 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System;
 
 public class MainMenuUIHandler : MonoBehaviour
 {
@@ -45,7 +47,17 @@ public class MainMenuUIHandler : MonoBehaviour
         if (PlayerPrefs.HasKey("SessionPublicity")) publicity.text = PlayerPrefs.GetString("SessionPublicity");
         if (PlayerPrefs.HasKey("PlayerNickname")) nameField.text = PlayerPrefs.GetString("PlayerNickname");
 
-        ChangePanel(mainMenuPanel, 1);
+        Debug.Log("Start");
+
+        AudioManager am = FindAnyObjectByType<AudioManager>();
+        if (am.gameEnded)
+        {
+            Debug.Log("Game Ended");
+            DisplayWinner(am.winnerName);
+            am.gameEnded = false;
+            am.winnerName = null;
+        }
+        else ChangePanel(mainMenuPanel, 1);
 
         ToggleLocalMultiplayer(false);
     }
@@ -69,14 +81,12 @@ public class MainMenuUIHandler : MonoBehaviour
     public void DisplayWinner(string player)
     {
         ChangePanel(winnerDisplayPanel, 1);
-        winnerAnnouncement.text = $"Player {player} won the game";
+        winnerAnnouncement.text = $"Player {player} has won the game";
     }
     public void OnFindGameClicked() // Sets the PlayerNickname PlayerPrefs, joins a NetworkRunner to a lobby, opens the SessionBrowserPanel
     {
         PlayerPrefs.SetString("PlayerNickname", nameField.text);
         PlayerPrefs.Save();
-
-        //GameManager.instance.playerNickname = playerNicknameField.text;
 
         NetworkRunnerHandler networkRunnerHandler = FindAnyObjectByType<NetworkRunnerHandler>();
 
@@ -88,6 +98,10 @@ public class MainMenuUIHandler : MonoBehaviour
     public void OpenCreateSessionPanel() // Create Session Button inside of the SessionBrowserPanel
     {
         ChangePanel(createSessionPanel, 1);
+    }
+    public void OpenMainMenuPanel() // Create Session Button inside of the SessionBrowserPanel
+    {
+        ChangePanel(mainMenuPanel, 1);
     }
 
     public void TogglePublicity()
@@ -154,17 +168,15 @@ public class MainMenuUIHandler : MonoBehaviour
 
     void ToggleLocalMultiplayer(bool state) // Sets the LocalPlay PlayerPref
     {
-        // false = 0
-        // true = 1
         if (state == true)
         {
             Debug.Log("Enable Local Play");
-            PlayerPrefs.SetInt("LocalPlay", 1);
+            PlayerPrefs.SetInt("LocalPlay", 1); // true
         }
         else
         {
             Debug.Log("Disable Local Play");
-            PlayerPrefs.SetInt("LocalPlay", 0);
+            PlayerPrefs.SetInt("LocalPlay", 0); // false
         }
         PlayerPrefs.Save();
         Debug.Log(PlayerPrefs.GetInt("LocalPlay"));

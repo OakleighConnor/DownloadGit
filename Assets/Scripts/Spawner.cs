@@ -15,8 +15,6 @@ using ExitGames.Client.Photon.StructWrapping;
 
 public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
 {
-    [HideInInspector] public string winnerName;
-
     [Header("Prefabs")]
     public GameObject playerInputPF;
     public GameObject playerCamera;
@@ -196,8 +194,7 @@ public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
         }
         if (shutdownReason == ShutdownReason.GameClosed)
         {
-            Debug.Log($"Game has finished. Winning player: {winnerName}");
-            FindAnyObjectByType<MainMenuUIHandler>().DisplayWinner(winnerName);
+            Debug.Log($"Game has finished");
         }
     }
     public void OnConnectedToServer(NetworkRunner runner) { }

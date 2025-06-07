@@ -7,7 +7,7 @@ namespace Player
     {
         protected override bool CanEnterState()
         {
-            return Machine.ActiveState != player._staggeredState;
+            return base.CanEnterState();
         }
 
         protected override bool CanExitState(PlayerStateBehaviour nextState)
@@ -30,12 +30,14 @@ namespace Player
                 Machine.TryDeactivateState(StateId);
             }
         }
-        
+
         protected override void OnExitState()
         {
             player.ToggleHitboxes(true);
             player.moving = true;
             player.cm.collisions = true;
+
+            player.StartIFrameTimer();
         }
 
         protected override void OnEnterStateRender()

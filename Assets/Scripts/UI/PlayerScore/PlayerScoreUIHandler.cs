@@ -29,7 +29,8 @@ public class PlayerScoreUIHandler : NetworkBehaviour
     public void EndGame(string playerName) // Ends the game once a player reaches the score required to win
     {
         Debug.Log($"Game has ended. Player {playerName} has won");
+        FindAnyObjectByType<AudioManager>().winnerName = playerName;
+        FindAnyObjectByType<AudioManager>().gameEnded = true;
         Runner.Shutdown(true, ShutdownReason.GameClosed);
-        Runner.GetComponent<Spawner>().winnerName = playerName;
     }
 }
