@@ -7,7 +7,7 @@ public class ItemSpawner : NetworkBehaviour
     public GameObject floppyDiskPF;
     public GameObject[] diskSpawnLocations;
     [Networked] byte diskCount { get; set; }
-    const byte diskTimerValue = 10;
+    const byte diskTimerValue = 5;
     const byte maxDiskCount = 3;
     [Networked] private TickTimer timeUntilDiskSpawn { get; set; }
     void Awake()
