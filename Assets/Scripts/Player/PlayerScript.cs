@@ -11,6 +11,9 @@ namespace Player
     [RequireComponent(typeof(StateMachineController))]
     public class PlayerScript : NetworkBehaviour, IDamageable, IStateMachineOwner
     {
+        public bool inLobby;
+        public bool gameOver;
+
         [Header("Invinsibility")]
         [Networked] public TickTimer invincibility { get; set; }
         public static byte invincibilityDuration = 2;
@@ -182,7 +185,7 @@ namespace Player
             transform.rotation = Quaternion.Euler(transform.rotation.x, 90, transform.rotation.z);
             kcc.SetGravity(Physics.gravity.y * 7.5f);
 
-            bool inLobby = SceneManager.GetActiveScene().name == "Lobby";
+            inLobby = SceneManager.GetActiveScene().name == "Lobby";
 
             if(HasInputAuthority && !inLobby)
             {
@@ -232,7 +235,9 @@ namespace Player
         }
         public override void FixedUpdateNetwork()
         {
-            if(GetInput(out NetworkInputData data))
+            if (gameOver) return;
+            
+            if (GetInput(out NetworkInputData data))
             {
                 applyInput.Invoke(data);
             }

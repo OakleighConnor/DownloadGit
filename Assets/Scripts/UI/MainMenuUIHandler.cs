@@ -19,7 +19,6 @@ public class MainMenuUIHandler : MonoBehaviour
     [SerializeField] GameObject createSessionPanel;
     [SerializeField] GameObject statusPanel;
     [SerializeField] GameObject settingsPanel;
-    [SerializeField] GameObject winnerDisplayPanel;
 
     [Header("WinnerDisplay")]
     [SerializeField] TMP_Text winnerAnnouncement;
@@ -48,16 +47,7 @@ public class MainMenuUIHandler : MonoBehaviour
         if (PlayerPrefs.HasKey("PlayerNickname")) nameField.text = PlayerPrefs.GetString("PlayerNickname");
 
         Debug.Log("Start");
-
-        AudioManager am = FindAnyObjectByType<AudioManager>();
-        if (am.gameEnded)
-        {
-            Debug.Log("Game Ended");
-            DisplayWinner(am.winnerName);
-            am.gameEnded = false;
-            am.winnerName = null;
-        }
-        else ChangePanel(mainMenuPanel, 1);
+        ChangePanel(mainMenuPanel, 1);
 
         ToggleLocalMultiplayer(false);
     }
@@ -72,16 +62,10 @@ public class MainMenuUIHandler : MonoBehaviour
         sessionBrowserPanel.SetActive(false);
         createSessionPanel.SetActive(false);
         statusPanel.SetActive(false);
-        winnerDisplayPanel.SetActive(false);
         settingsPanel.SetActive(false);
 
         activePanel.SetActive(true);
         anim.SetInteger("CameraPos", cameraPos);
-    }
-    public void DisplayWinner(string player)
-    {
-        ChangePanel(winnerDisplayPanel, 1);
-        winnerAnnouncement.text = $"Player {player} has won the game";
     }
     public void OnFindGameClicked() // Sets the PlayerNickname PlayerPrefs, joins a NetworkRunner to a lobby, opens the SessionBrowserPanel
     {

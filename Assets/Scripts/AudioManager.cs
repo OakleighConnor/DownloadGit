@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
 {
-     public string winnerName;
-    public bool gameEnded = false;
     public static AudioManager instance;
 
     [Header("Music")]

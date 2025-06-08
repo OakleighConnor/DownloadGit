@@ -38,11 +38,12 @@ public class SessionListUIHandler : MonoBehaviour
         // Hook up events
         addedSessionInfoListUIItem.OnJoinSession += AddedSessionInfoListUIItem_OnJoinSession;
         
-        createSessionButton.SetActive(false);
+        createSessionButton.SetActive(true);
     }
 
     private void AddedSessionInfoListUIItem_OnJoinSession(SessionInfo sessionInfo)
     {
+        createSessionButton.SetActive(true);
         NetworkRunnerHandler networkRunnerHandler = FindAnyObjectByType<NetworkRunnerHandler>();
 
         networkRunnerHandler.JoinGame(sessionInfo.Name);

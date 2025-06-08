@@ -91,9 +91,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eb631226c262414ba23377212df0f7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nicknameText: {fileID: 7543219119382206488}
-  scoreText: {fileID: 5649259073425813445}
+  nicknameUI: {fileID: 7543219119382206488}
+  scoreUI: {fileID: 5649259073425813445}
   scoreBackground: {fileID: 1276075920666983668}
+  parent: {fileID: 0}
 --- !u!114 &-519304394539138461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,7 +111,8 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours: []
+  NetworkedBehaviours:
+  - {fileID: 3766173909898359835}
   ForceRemoteRenderTimeframe: 0
 --- !u!1 &3795751246788693911
 GameObject:
@@ -313,7 +315,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Omni Man
+  m_text: 'PLACEHOLDER
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c77d1b54bde9f2e43904b0e6fd55c92b, type: 2}
   m_sharedMaterial: {fileID: -3849922986108435271, guid: c77d1b54bde9f2e43904b0e6fd55c92b, type: 2}
@@ -340,7 +344,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 45
   m_fontSizeBase: 72
   m_fontWeight: 400
   m_enableAutoSizing: 1

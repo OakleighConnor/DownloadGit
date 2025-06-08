@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BasicEnemy
   - DiskSpawnLocation
+  - PlayerScoreDisplay
   layers:
   - Default
   - TransparentFX

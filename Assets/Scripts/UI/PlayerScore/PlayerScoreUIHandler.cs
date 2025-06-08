@@ -6,12 +6,12 @@ using Player;
 public class PlayerScoreUIHandler : NetworkBehaviour
 {
     public GameObject scoreItemPF;
-    public GameObject horizontalLayoutGroup;
+    public NetworkObject horizontalLayoutGroup;
     public PlayerScoreManager[] playerScoreManagers;
 
     public override void Spawned()
     {
-        CreatePlayerScoreItems();
+        if (HasStateAuthority) CreatePlayerScoreItems();
     }
     public void CreatePlayerScoreItems() // Creates a PlayerScoreItem for all active PlayerScoreManagers in the scene (one for each player)
     {
@@ -20,17 +20,9 @@ public class PlayerScoreUIHandler : NetworkBehaviour
         foreach (PlayerScoreManager scoreManager in playerScoreManagers)
         {
             NetworkObject psmObj = Runner.Spawn(scoreItemPF);
-            psmObj.transform.SetParent(horizontalLayoutGroup.transform);
+            PlayerScoreUIItem uiItemScript = psmObj.GetComponent<PlayerScoreUIItem>();
 
-            scoreManager.AssignScoreUIValues(psmObj.GetComponent<PlayerScoreUIItem>());
+            scoreManager.AssignScoreUIValues(uiItemScript, horizontalLayoutGroup);
         }
-    }
-
-    public void EndGame(string playerName) // Ends the game once a player reaches the score required to win
-    {
-        Debug.Log($"Game has ended. Player {playerName} has won");
-        FindAnyObjectByType<AudioManager>().winnerName = playerName;
-        FindAnyObjectByType<AudioManager>().gameEnded = true;
-        Runner.Shutdown(true, ShutdownReason.GameClosed);
     }
 }
